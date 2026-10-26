@@ -1,0 +1,2883 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+  <title>Thị trấn Solomi AI Marketing Agent 3D - Dark Fantasy Edition</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+  <!-- GSAP for smooth UI/3D Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .icon {
+      width: 1em;
+      height: 1em;
+      display: inline-block;
+      vertical-align: -0.125em;
+      flex-shrink: 0;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b0914; /* Deep Obsidian */
+      color: #e2e8f0;
+    }
+
+    h1, h2, h3, .gothic-font {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.05em;
+    }
+
+    #webgl-canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    /* Dark Fantasy Gothic Glassmorphism Panel */
+    .glass-panel {
+      background: rgba(18, 14, 28, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.67), 0 0 15px 0 rgba(124, 58, 237, 0.15);
+    }
+
+    .glass-button {
+      background: rgba(30, 24, 48, 0.8);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-button:hover {
+      background: rgba(124, 58, 237, 0.3);
+      border-color: rgba(196, 181, 253, 0.6);
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+    }
+
+    .glass-button.active {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(88, 28, 135, 0.9));
+      border-color: rgba(216, 180, 254, 0.8);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+      color: #ffffff;
+    }
+
+    /* 2D Floating World Labels */
+    .world-label {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      pointer-events: auto;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .world-label:hover {
+      z-index: 20;
+    }
+
+    /* Gothic Mystical Speech Bubbles */
+    .speech-bubble {
+      background: rgba(22, 18, 36, 0.92);
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #e9d5ff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(168, 85, 247, 0.3);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 6px 6px 0;
+      border-style: solid;
+      border-color: rgba(22, 18, 36, 0.92) transparent;
+    }
+
+    .agent-tag {
+      color: #f3e8ff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 4px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 12, 25, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #6b21a8;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9333ea;
+    }
+
+    /* Mystical Pulsing Glow Dot */
+    .pulse-dot-gothic {
+      width: 8px;
+      height: 8px;
+      background-color: #a855f7;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7;
+      animation: gothicPulse 2s infinite;
+    }
+
+    @keyframes gothicPulse {
+      0% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 5px #a855f7; }
+      50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 15px #c084fc, 0 0 25px #a855f7; }
+      100% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 5px #a855f7; }
+    }
+
+    /* ---- Multiplayer: other players' name tags & chat bubbles ---- */
+    .mp-player-label {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .mp-name-tag {
+      background: rgba(22, 18, 36, 0.85);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #e9d5ff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .mp-chat-bubble {
+      background: rgba(22, 18, 36, 0.93);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #f3e8ff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 10px;
+      white-space: nowrap;
+      margin-bottom: 5px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+
+  <!-- 3D WebGL Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- 2D Speech Bubbles Overlay -->
+  <div id="labels-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+  <!-- TOP HEADER / CONTROL NAVBAR -->
+  <header class="absolute top-4 left-4 right-4 z-30 flex flex-wrap items-center justify-between gap-3 pointer-events-auto">
+    <!-- Brand Info -->
+    <div class="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-900 via-purple-600 to-amber-500 flex items-center justify-center text-amber-200 font-extrabold text-xl shadow-lg border border-amber-400/30 gothic-font">
+        S
+      </div>
+      <div>
+        <h1 class="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-amber-200 to-purple-400 leading-none">SOLOMI DARK CITADEL</h1>
+        <p class="text-[10px] font-bold text-purple-300/70 tracking-widest uppercase">Gothic AI Marketing Team</p>
+      </div>
+    </div>
+
+    <!-- Main Control Actions -->
+    <div class="glass-panel px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-bold text-purple-200 flex-wrap">
+      <button id="btn-agents-move" onclick="toggleAgentMovement()" class="glass-button active px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M13 6l-3 5 3 2 1 7M10 11l-4 2M14 13l3-2 3 4"/></svg> Dừng di chuyển
+      </button>
+      <button id="btn-env-anim" onclick="toggleEnvAnimation()" class="glass-button active px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L15 9"/><path d="M14 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/><circle cx="19" cy="14" r="1"/></svg> Hiệu ứng 3D
+      </button>
+      <button id="btn-cam-float" onclick="toggleCamFloat()" class="glass-button active px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="12" height="10" rx="2"/><path d="M15 10l6-3v10l-6-3z"/></svg> Dừng xoay
+      </button>
+      <button id="btn-names" onclick="toggleNames()" class="glass-button active px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        Tên
+      </button>
+      <button id="btn-bubbles" onclick="toggleBubbles()" class="glass-button active px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        Bong bóng
+      </button>
+      <button onclick="resetCameraView()" id="overview-mode-btn" class="glass-button active px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        Toàn cảnh
+      </button>
+      <button onclick="enterFirstPerson()" id="fp-mode-btn" class="glass-button px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="4" r="2"/><path d="M9 6l-2 6 3 2 1 6M9 12l4 1 3-3"/><path d="M16 19h5M18 17l3 2-3 2"/></svg> Nhân vật
+      </button>
+      <button onclick="openOverviewModal()" class="glass-button px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        Tổng quan
+      </button>
+      <button onclick="toggleWolfPanel()" id="btn-wolf" class="glass-button px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+        🐺 Ma Sói
+      </button>
+    </div>
+
+    <!-- Agent Quick Counter -->
+    <div class="glass-panel px-4 py-2 rounded-2xl flex items-center gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="pulse-dot-gothic"></span>
+        <span class="font-extrabold text-purple-200">7 Mini AI Agents</span>
+      </div>
+      <div class="h-4 w-px bg-purple-500/30"></div>
+      <div id="mp-online-badge" class="flex items-center gap-1.5 text-emerald-300 font-extrabold">
+        <span>👥</span><span id="mp-online-count">1</span><span class="text-purple-300/70 font-bold">trực tuyến</span>
+      </div>
+      <div class="h-4 w-px bg-purple-500/30"></div>
+      <div onclick="openActivityLog()" class="text-amber-400 font-extrabold cursor-pointer hover:text-amber-300 transition flex items-center gap-1">
+        <span>1 tác vụ cần duyệt</span>
+        <svg class="icon text-[10px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- ENVIRONMENT CONTROLLER PANEL (DAY/NIGHT, WEATHER, SEASONS) -->
+  <aside class="absolute top-20 left-4 z-30 pointer-events-auto flex flex-col gap-2">
+    <!-- Day / Night & Weather Box -->
+    <div class="glass-panel p-3 rounded-2xl flex flex-col gap-2.5 w-48">
+      <div class="text-[10px] font-black tracking-widest text-purple-300/80 uppercase flex items-center gap-1.5 gothic-font">
+        <svg class="icon text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 1 1 1-7.9A5 5 0 0 1 17 11a3.5 3.5 0 0 1 0 7z"/><path d="M16 4.5A3.5 3.5 0 1 0 19.5 8 2.8 2.8 0 0 1 16 4.5z"/></svg> Thời Gian & Thời Tiết
+      </div>
+      
+      <!-- Day / Night Toggle -->
+      <div class="grid grid-cols-2 gap-1.5">
+        <button id="time-day" onclick="setTimeOfDay('day')" class="glass-button text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1.5">
+          <svg class="icon text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg> Ngày
+        </button>
+        <button id="time-night" onclick="setTimeOfDay('night')" class="glass-button active text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1.5">
+          <svg class="icon text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg> Đêm
+        </button>
+      </div>
+
+      <!-- Weather Toggle -->
+      <div class="grid grid-cols-2 gap-1.5">
+        <button id="weather-clear" onclick="setWeather('clear')" class="glass-button active text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1.5">
+          <svg class="icon text-yellow-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2.2"/><path d="M7 18a4 4 0 1 1 1-7.9A5 5 0 0 1 17 11a3.5 3.5 0 0 1 0 7z"/></svg> Nắng / Khô
+        </button>
+        <button id="weather-rain" onclick="setWeather('rain')" class="glass-button text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1.5">
+          <svg class="icon text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15a4 4 0 1 1 1-7.9A5 5 0 0 1 17 8a3.5 3.5 0 0 1-.5 7z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/></svg> Mưa Bão
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 Seasons Selection Box -->
+    <div class="glass-panel p-3 rounded-2xl flex flex-col gap-2.5 w-48">
+      <div class="text-[10px] font-black tracking-widest text-purple-300/80 uppercase flex items-center gap-1.5 gothic-font">
+        <svg class="icon text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.5L13 13l-3.5 1.5L11 11z"/></svg> 4 Mùa Dark Fantasy
+      </div>
+
+      <div class="grid grid-cols-2 gap-1.5">
+        <button id="season-spring" onclick="setSeason('spring')" class="glass-button text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1">
+          <svg class="icon text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V10"/><path d="M12 10C7 10 5 6 5 3c5 0 7 4 7 7z"/><path d="M12 14c4 0 6-2.5 6-6-4 0-6 2-6 6z"/></svg> Xuân Ma
+        </button>
+        <button id="season-summer" onclick="setSeason('summer')" class="glass-button text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1">
+          <svg class="icon text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 4 5 6 5 10a5 5 0 1 1-10 0c0-2 1-3 2-5 0 2 1 3 2 2-1-2-1-5 1-7z"/></svg> Hạ Huyết
+        </button>
+        <button id="season-autumn" onclick="setSeason('autumn')" class="glass-button active text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1">
+          <svg class="icon text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 10 12 4 20 4c0 8-6 15-15 15z"/><path d="M5 19l9-9"/></svg> Thu Sương
+        </button>
+        <button id="season-winter" onclick="setSeason('winter')" class="glass-button text-xs py-1.5 px-2 rounded-xl font-bold flex items-center justify-center gap-1">
+          <svg class="icon text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4 7l16 10M20 7L4 17"/></svg> Đông Băng
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- BOTTOM CONTROL DOCK -->
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 max-w-full px-4 pointer-events-auto">
+    <div class="glass-panel px-3 py-2 rounded-2xl flex items-center gap-2 overflow-x-auto max-w-[95vw]">
+      <button onclick="openActivityLog()" class="bg-gradient-to-r from-purple-800 via-purple-700 to-indigo-900 hover:from-purple-700 hover:to-indigo-800 text-amber-200 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-lg border border-purple-500/40 shrink-0 transition">
+        <svg class="icon text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg> Nhật ký tác vụ
+      </button>
+
+      <div class="h-5 w-px bg-purple-500/30 shrink-0"></div>
+
+      <!-- Quick Agent Focus Pills -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button onclick="focusOnAgent('claude')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-purple-200 flex items-center gap-1.5">
+          <svg class="icon text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-9 5 4 2-6 2 6 5-4 2 9z"/><path d="M4 20h16"/></svg> Claude Citadel
+        </button>
+        <button onclick="focusOnAgent('research')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-purple-300 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]"></span> Nghiên cứu
+        </button>
+        <button onclick="focusOnAgent('writer')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-amber-200 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]"></span> Viết bài
+        </button>
+        <button onclick="focusOnAgent('designer')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-rose-300 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e]"></span> Thiết kế
+        </button>
+        <button onclick="focusOnAgent('publisher')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span> Đăng bài
+        </button>
+        <button onclick="focusOnAgent('qc')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></span> GA - QC
+        </button>
+        <button onclick="focusOnAgent('analytics')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-slate-400 shadow-[0_0_8px_#94a3b8]"></span> Đa số liệu
+        </button>
+        <button onclick="focusOnAgent('comments')" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-orange-300 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_#f97316]"></span> Trả lời comment
+        </button>
+      </div>
+
+      <div class="h-5 w-px bg-purple-500/30 shrink-0"></div>
+
+      <!-- Multiplayer chat -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <input id="mp-chat-input" type="text" maxlength="80" placeholder="Nhắn với mọi người..."
+          class="w-40 px-2.5 py-1.5 text-xs rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-100 placeholder-purple-400/50 focus:outline-none focus:border-amber-400"
+          onkeydown="if(event.key==='Enter'){window.MP&&MP.sendChat(this.value);this.value='';this.blur();}">
+        <button onclick="var i=document.getElementById('mp-chat-input'); window.MP&&MP.sendChat(i.value); i.value='';" class="glass-button px-3 py-1.5 rounded-xl text-xs font-bold text-purple-200 shrink-0">
+          Gửi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MA SÓI (WEREWOLF) MULTIPLAYER PANEL -->
+  <div id="wolf-panel" class="fixed top-0 left-0 h-full w-[380px] max-w-[92vw] glass-panel border-r border-purple-500/30 shadow-2xl z-[48] transform -translate-x-full transition-transform duration-300 ease-in-out p-5 overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-purple-500/20">
+      <h2 class="text-base font-extrabold text-purple-100 gothic-font flex items-center gap-2">🐺 Ma Sói Dark Citadel</h2>
+      <button onclick="closeWolfPanel()" class="text-purple-400 hover:text-purple-200 p-2 rounded-full hover:bg-purple-900/40 transition">
+        <svg class="icon text-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div id="wolf-panel-body" class="mt-4 text-sm text-purple-200">
+      <p class="text-purple-300/80 text-xs leading-relaxed">Đang kết nối...</p>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT AGENT DETAIL DRAWER -->
+  <div id="agent-drawer" class="fixed top-0 right-0 h-full w-96 glass-panel border-l border-purple-500/30 shadow-2xl z-[46] transform translate-x-full transition-transform duration-300 ease-in-out p-6 overflow-y-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-purple-500/20">
+      <div class="flex items-center gap-3">
+        <div id="drawer-avatar" class="w-12 h-12 rounded-2xl bg-purple-900 border border-purple-400/40 text-amber-300 flex items-center justify-center text-xl shadow-lg">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="10" rx="2"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/><path d="M12 8V5M9 5h6"/></svg>
+        </div>
+        <div>
+          <h2 id="drawer-title" class="text-base font-extrabold text-purple-100 gothic-font leading-tight">Agent Name</h2>
+          <span id="drawer-status" class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-950 text-purple-300 border border-purple-700/50 mt-1">
+            Đang di chuyển & thực thi phép thuật
+          </span>
+        </div>
+      </div>
+      <button onclick="closeAgentDrawer()" class="text-purple-400 hover:text-purple-200 p-2 rounded-full hover:bg-purple-900/50 transition">
+        <svg class="icon text-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <!-- Active Task Detail -->
+    <div class="mt-5 bg-purple-950/40 rounded-2xl p-4 border border-purple-500/30 shadow-inner">
+      <div class="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest mb-1.5 gothic-font">Nhiệm vụ đang thực thi</div>
+      <div id="drawer-task-name" class="font-extrabold text-purple-100 text-sm mb-1">Quét 30 Video TikTok Content</div>
+      <p id="drawer-task-desc" class="text-xs text-purple-300/80 leading-relaxed mb-3">
+        Phân tích nhu cầu khách hàng, lập kịch bản video và chuyển sang trạm GA-QC kiểm duyệt.
+      </p>
+
+      <div class="flex flex-wrap gap-1.5 mb-3">
+        <span class="px-2.5 py-1 bg-purple-900/70 text-purple-200 rounded-lg text-[10px] font-bold border border-purple-500/30">SOL-025</span>
+        <span class="px-2.5 py-1 bg-amber-950/70 text-amber-300 rounded-lg text-[10px] font-bold border border-amber-500/30">research-sprint</span>
+        <span class="px-2.5 py-1 bg-cyan-950/70 text-cyan-300 rounded-lg text-[10px] font-bold border border-cyan-500/30">video-blueprint</span>
+      </div>
+
+      <div class="w-full bg-purple-950 h-2 rounded-full overflow-hidden border border-purple-800/40">
+        <div id="drawer-progress" class="bg-gradient-to-r from-purple-600 via-amber-500 to-indigo-500 h-full w-3/4 rounded-full transition-all duration-500 shadow-[0_0_10px_#a855f7]"></div>
+      </div>
+      <div class="flex justify-between items-center mt-2 text-[11px] text-purple-300 font-bold">
+        <span>Tiến độ tác vụ</span>
+        <span id="drawer-progress-text" class="text-amber-400">85%</span>
+      </div>
+    </div>
+
+    <!-- Activity Timeline -->
+    <div class="mt-6">
+      <h3 class="text-xs font-extrabold text-amber-400/90 uppercase tracking-widest mb-3 gothic-font">Lịch sử tác vụ</h3>
+      <div id="drawer-logs" class="space-y-2.5 text-xs">
+        <div class="flex items-start gap-3 bg-purple-950/30 p-3 rounded-xl border border-purple-500/20">
+          <div class="w-2 h-2 rounded-full bg-purple-400 mt-1.5 shrink-0 shadow-[0_0_8px_#c084fc]"></div>
+          <div>
+            <div class="font-bold text-purple-200">Hoàn thành di chuyển tới trạm GA-QC</div>
+            <div class="text-[10px] text-purple-400/70">Vừa xong</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-purple-950/30 p-3 rounded-xl border border-purple-500/20">
+          <div class="w-2 h-2 rounded-full bg-amber-400 mt-1.5 shrink-0 animate-pulse shadow-[0_0_8px_#f59e0b]"></div>
+          <div>
+            <div class="font-bold text-purple-200">Đang truyền dữ liệu kịch bản</div>
+            <div class="text-[10px] text-amber-400 font-bold">Đang xử lý...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input prompt -->
+    <div class="mt-6">
+      <label class="text-xs font-bold text-purple-200 block mb-2">Gửi lệnh mới cho Agent:</label>
+      <div class="flex gap-2">
+        <input type="text" placeholder="Nhập prompt điều khiển..." class="w-full px-3 py-2 text-xs rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-100 placeholder-purple-400/50 focus:outline-none focus:border-amber-400">
+        <button class="bg-gradient-to-r from-purple-700 to-indigo-800 text-amber-200 font-bold px-3 py-2 rounded-xl text-xs hover:from-purple-600 hover:to-indigo-700 transition border border-purple-400/30">Gửi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY LOG DRAWER -->
+  <div id="log-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 border border-purple-500/40 max-h-[85vh] flex flex-col shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-purple-500/20">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-purple-900 border border-purple-500/30 text-amber-300 flex items-center justify-center font-bold">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-extrabold text-purple-100 gothic-font leading-tight">Nhật ký tác vụ Dark Citadel</h2>
+            <p class="text-xs text-purple-400/70">Cập nhật theo thời gian thực từ các trạm</p>
+          </div>
+        </div>
+        <button onclick="closeActivityLog()" class="text-purple-400 hover:text-purple-200 p-2 rounded-full hover:bg-purple-900/40 transition">
+          <svg class="icon text-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <!-- Logs Table -->
+      <div class="mt-4 overflow-y-auto flex-1 space-y-2 pr-1">
+        <div class="flex items-center justify-between p-3 bg-purple-950/40 rounded-2xl border border-purple-500/20">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 bg-purple-900/80 text-purple-200 font-extrabold text-xs rounded-lg border border-purple-500/30">19/10</span>
+            <span class="px-2.5 py-1 bg-amber-950/80 text-amber-300 font-bold text-xs rounded-lg border border-amber-500/30">Claude Citadel</span>
+            <p class="text-xs font-bold text-purple-200">Kịch bản SOL-025 được duyệt, tạo giọng đọc hoàn tất</p>
+          </div>
+          <span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 font-bold text-[10px] rounded-full border border-emerald-500/30">Đã duyệt</span>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-purple-950/40 rounded-2xl border border-purple-500/20">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 bg-purple-900/80 text-purple-200 font-extrabold text-xs rounded-lg border border-purple-500/30">19/10</span>
+            <span class="px-2.5 py-1 bg-rose-950/80 text-rose-300 font-bold text-xs rounded-lg border border-rose-500/30">Thiết kế</span>
+            <p class="text-xs font-bold text-purple-200">Dựng video 17s Gothic style (mạng G17) hoàn thành</p>
+          </div>
+          <span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 font-bold text-[10px] rounded-full border border-emerald-500/30">Đã duyệt</span>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-purple-950/40 rounded-2xl border border-purple-500/20">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 bg-purple-900/80 text-purple-200 font-extrabold text-xs rounded-lg border border-purple-500/30">18/10</span>
+            <span class="px-2.5 py-1 bg-amber-950/80 text-amber-300 font-bold text-xs rounded-lg border border-amber-500/30">Viết bài</span>
+            <p class="text-xs font-bold text-purple-200">Rút 17 công thức hook ma mị từ 60 Video cùng 2 kênh hot</p>
+          </div>
+          <span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 font-bold text-[10px] rounded-full border border-emerald-500/30">Đã duyệt</span>
+        </div>
+
+        <div class="flex items-center justify-between p-3 bg-purple-950/40 rounded-2xl border border-purple-500/20">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 bg-purple-900/80 text-purple-200 font-extrabold text-xs rounded-lg border border-purple-500/30">18/10</span>
+            <span class="px-2.5 py-1 bg-purple-900/80 text-purple-300 font-bold text-xs rounded-lg border border-purple-500/30">Nghiên cứu</span>
+            <p class="text-xs font-bold text-purple-200">Quét 30 video @danksoanh.vn + 30 video Nghiên cứu Content</p>
+          </div>
+          <span class="px-2.5 py-1 bg-amber-950 text-amber-400 font-bold text-[10px] rounded-full border border-amber-500/30">Đang chạy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYSTEM OVERVIEW DASHBOARD -->
+  <div id="overview-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-lg rounded-3xl p-6 border border-purple-500/40 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-purple-500/20">
+        <div>
+          <h2 class="text-base font-extrabold text-purple-100 gothic-font">Tổng quan Dark Citadel</h2>
+          <p class="text-xs text-purple-400/70">Phân bổ khối lượng công việc AI Dark Team</p>
+        </div>
+        <button onclick="closeOverviewModal()" class="text-purple-400 hover:text-purple-200 p-2 rounded-full hover:bg-purple-900/40 transition">
+          <svg class="icon text-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2.5 my-5">
+        <div class="bg-purple-950/50 p-3 rounded-2xl text-center border border-purple-500/20 shadow-inner">
+          <div class="text-2xl font-black text-purple-400">5</div>
+          <div class="text-[10px] font-bold text-purple-300/70">Đang chạy</div>
+        </div>
+        <div class="bg-purple-950/50 p-3 rounded-2xl text-center border border-purple-500/20 shadow-inner">
+          <div class="text-2xl font-black text-amber-400">2</div>
+          <div class="text-[10px] font-bold text-purple-300/70">Chờ duyệt</div>
+        </div>
+        <div class="bg-purple-950/50 p-3 rounded-2xl text-center border border-purple-500/20 shadow-inner">
+          <div class="text-2xl font-black text-emerald-400">7</div>
+          <div class="text-[10px] font-bold text-purple-300/70">Đã xong</div>
+        </div>
+        <div class="bg-purple-950/50 p-3 rounded-2xl text-center border border-purple-500/20 shadow-inner">
+          <div class="text-2xl font-black text-cyan-400">0</div>
+          <div class="text-[10px] font-bold text-purple-300/70">Chờ chạy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUEST LOGIN / START SCREEN -->
+  <div id="login-screen" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-xl transition-opacity duration-500">
+    <div class="glass-panel w-full max-w-md mx-4 rounded-3xl p-7 border border-purple-500/40 shadow-2xl text-center">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-purple-900 via-purple-600 to-amber-500 flex items-center justify-center text-amber-200 font-black text-3xl shadow-lg border border-amber-400/30 gothic-font mb-4">S</div>
+      <h1 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-amber-200 to-purple-400 gothic-font mb-1">SOLOMI DARK CITADEL</h1>
+      <p class="text-xs text-purple-300/70 mb-6">Bước vào thị trấn ma thuật và khám phá các trạm AI Agent ở góc nhìn thứ nhất</p>
+
+      <input id="guest-name-input" type="text" maxlength="18" placeholder="Tên lữ khách (không bắt buộc)"
+        class="w-full px-4 py-2.5 mb-4 text-sm rounded-xl bg-purple-950/60 border border-purple-500/40 text-purple-100 placeholder-purple-400/50 focus:outline-none focus:border-amber-400 text-center" />
+
+      <button onclick="enterAsGuest()" class="w-full bg-gradient-to-r from-purple-700 via-purple-600 to-amber-600 hover:from-purple-600 hover:to-amber-500 text-white font-extrabold px-4 py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg border border-amber-400/30 transition mb-4">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l3-3 3 3V9l2-2 2 2V9l3-3 3 3v12z"/><rect x="10" y="14" width="4" height="7"/></svg> Vào thị trấn với tư cách Khách
+      </button>
+
+      <div class="text-left bg-purple-950/40 rounded-xl p-3 border border-purple-500/20 text-[11px] text-purple-300/80 leading-relaxed space-y-1">
+        <div><span class="text-amber-400 font-bold">W A S D</span> — di chuyển · giữ <span class="text-amber-400 font-bold">Shift</span> để chạy</div>
+        <div><span class="text-amber-400 font-bold">Chuột</span> — xoay góc nhìn (nhấp để khoá chuột)</div>
+        <div><span class="text-amber-400 font-bold">E</span> — bước vào tòa nhà gần nhất, bấm lại để rời đi</div>
+        <div><span class="text-amber-400 font-bold">M V N B</span> — tắt/bật di chuyển NPC, hiệu ứng 3D, tên, bong bóng (khi chuột đang khoá, dùng phím này thay vì bấm nút)</div>
+        <div><span class="text-amber-400 font-bold">ESC</span> — nhả chuột để dùng thanh điều khiển · nút "Toàn cảnh" để quay về camera tổng</div>
+        <div class="text-purple-400/60">Mẹo: nhìn bản đồ nhỏ góc trên phải để định hướng tới từng trạm agent.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIRST-PERSON HUD -->
+  <div id="fp-hud" class="hidden fixed inset-0 z-40 pointer-events-none">
+    <!-- cinematic vignette -->
+    <div class="absolute inset-0" style="background: radial-gradient(ellipse at center, transparent 45%, rgba(5,2,12,0.55) 100%);"></div>
+
+    <!-- crosshair -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div class="w-1.5 h-1.5 rounded-full bg-amber-300 shadow-[0_0_6px_#f59e0b]"></div>
+    </div>
+
+    <!-- interaction prompt -->
+    <div id="fp-interact-prompt" class="hidden absolute bottom-28 left-1/2 -translate-x-1/2 glass-panel px-4 py-2 rounded-xl text-xs font-bold text-amber-200 border border-amber-400/40"></div>
+
+    <!-- player badge -->
+    <div class="absolute top-20 left-4 glass-panel px-3 py-2 rounded-xl text-[11px] font-bold text-purple-200 flex items-center gap-2">
+      <svg class="icon text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span id="player-name-display">Lữ khách</span>
+      <span class="text-purple-400/60">· Góc nhìn thứ nhất</span>
+    </div>
+
+    <!-- minimap (outdoor navigation aid; hidden once inside a building) -->
+    <div id="fp-minimap" class="absolute top-20 right-4 glass-panel rounded-2xl p-2.5 border border-purple-500/30">
+      <canvas id="fp-minimap-canvas" width="150" height="150" class="block rounded-xl"></canvas>
+      <div class="text-center text-[9px] font-bold text-purple-300/60 mt-1 tracking-widest uppercase">Bản đồ</div>
+    </div>
+
+    <!-- room info panel (shown while inside a building) -->
+    <div id="fp-room-info" class="hidden absolute top-20 right-4 w-72 glass-panel rounded-2xl p-4 border border-purple-500/30">
+      <div class="text-[10px] font-extrabold text-amber-400 uppercase tracking-widest mb-1.5 gothic-font">Bạn đang ở trong</div>
+      <div id="fp-room-info-title" class="font-extrabold text-purple-100 text-sm mb-2 gothic-font">—</div>
+      <div class="text-[10px] font-extrabold text-purple-300/70 uppercase tracking-widest mb-1">Nhiệm vụ</div>
+      <div id="fp-room-info-task" class="text-xs text-purple-200 font-bold mb-2">—</div>
+      <p id="fp-room-info-desc" class="text-[11px] text-purple-300/80 leading-relaxed mb-3">—</p>
+      <div class="w-full bg-purple-950 h-1.5 rounded-full overflow-hidden border border-purple-800/40">
+        <div id="fp-room-info-progress" class="bg-gradient-to-r from-purple-600 via-amber-500 to-indigo-500 h-full w-0 rounded-full transition-all duration-500"></div>
+      </div>
+      <div class="flex justify-between items-center mt-1.5 text-[10px] text-purple-300 font-bold">
+        <span>Tiến độ</span>
+        <span id="fp-room-info-progress-text" class="text-amber-400">0%</span>
+      </div>
+    </div>
+
+    <!-- key-shortcut reminder (toolbar buttons are unreachable while the mouse is captured) -->
+    <div class="absolute bottom-4 left-4 glass-panel px-3 py-2 rounded-xl text-[10px] font-bold text-purple-300/80 flex items-center gap-3">
+      <span><span class="text-amber-400">M</span> di chuyển NPC</span>
+      <span><span class="text-amber-400">V</span> hiệu ứng 3D</span>
+      <span><span class="text-amber-400">N</span> tên</span>
+      <span><span class="text-amber-400">B</span> bong bóng</span>
+    </div>
+
+    <!-- resume-control hint (shown when pointer unlocks mid-session); only the
+         inner panel is clickable so the toolbar/dock beneath stays usable -->
+    <div id="fp-pointer-hint" class="hidden absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none">
+      <div onclick="resumeFirstPersonLock()" class="glass-panel px-5 py-3 rounded-xl text-sm font-bold text-purple-100 border border-purple-500/40 pointer-events-auto cursor-pointer">
+        Nhấp vào đây để tiếp tục điều khiển nhân vật
+        <div class="text-[10px] font-normal text-purple-300/70 mt-1">(các nút trên thanh điều khiển vẫn bấm được lúc này)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- enter-building transition flash -->
+  <div id="enter-flash" class="fixed inset-0 bg-black z-[45] pointer-events-none opacity-0" style="transition: opacity 0.26s ease-in-out;"></div>
+
+  <!-- THREE.JS & GSAP ANIMATION ENGINE -->
+  <script>
+    // Lightweight inline-SVG icon set (replaces external FontAwesome, which the
+    // artifact viewer's CSP blocks) — keyed the same as the old "fa-xxx" names.
+    const ICONS = {
+      "person-walking": '<circle cx="13" cy="4" r="2"/><path d="M13 6l-3 5 3 2 1 7M10 11l-4 2M14 13l3-2 3 4"/>',
+      "wand-magic-sparkles": '<path d="M4 20L15 9"/><path d="M14 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/><circle cx="19" cy="14" r="1"/>',
+      "video": '<rect x="3" y="7" width="12" height="10" rx="2"/><path d="M15 10l6-3v10l-6-3z"/>',
+      "person-walking-dashed-line-arrow-right": '<circle cx="9" cy="4" r="2"/><path d="M9 6l-2 6 3 2 1 6M9 12l4 1 3-3"/><path d="M16 19h5M18 17l3 2-3 2"/>',
+      "angle-right": '<path d="M9 6l6 6-6 6"/>',
+      "cloud-moon": '<path d="M7 18a4 4 0 1 1 1-7.9A5 5 0 0 1 17 11a3.5 3.5 0 0 1 0 7z"/><path d="M16 4.5A3.5 3.5 0 1 0 19.5 8 2.8 2.8 0 0 1 16 4.5z"/>',
+      "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+      "moon": '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+      "cloud-sun": '<circle cx="8" cy="6" r="2.2"/><path d="M7 18a4 4 0 1 1 1-7.9A5 5 0 0 1 17 11a3.5 3.5 0 0 1 0 7z"/>',
+      "cloud-showers-heavy": '<path d="M7 15a4 4 0 1 1 1-7.9A5 5 0 0 1 17 8a3.5 3.5 0 0 1-.5 7z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/>',
+      "compass": '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5L13 13l-3.5 1.5L11 11z"/>',
+      "seedling": '<path d="M12 21V10"/><path d="M12 10C7 10 5 6 5 3c5 0 7 4 7 7z"/><path d="M12 14c4 0 6-2.5 6-6-4 0-6 2-6 6z"/>',
+      "fire": '<path d="M12 3c3 4 5 6 5 10a5 5 0 1 1-10 0c0-2 1-3 2-5 0 2 1 3 2 2-1-2-1-5 1-7z"/>',
+      "leaf": '<path d="M5 19C5 10 12 4 20 4c0 8-6 15-15 15z"/><path d="M5 19l9-9"/>',
+      "snowflake": '<path d="M12 2v20M4 7l16 10M20 7L4 17"/>',
+      "scroll": '<path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+      "crown": '<path d="M3 17l2-9 5 4 2-6 2 6 5-4 2 9z"/><path d="M4 20h16"/>',
+      "robot": '<rect x="5" y="8" width="14" height="10" rx="2"/><circle cx="9" cy="13" r="1.3"/><circle cx="15" cy="13" r="1.3"/><path d="M12 8V5M9 5h6"/>',
+      "xmark": '<path d="M6 6l12 12M18 6L6 18"/>',
+      "dungeon": '<path d="M4 21V9l3-3 3 3V9l2-2 2 2V9l3-3 3 3v12z"/><rect x="10" y="14" width="4" height="7"/>',
+      "user-ninja": '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',
+      "magnifying-glass": '<circle cx="10" cy="10" r="6"/><path d="M20 20l-5.5-5.5"/>',
+      "pen-nib": '<path d="M3 21l4-1 11-11-3-3L4 17z"/><path d="M14 6l3 3"/>',
+      "paper-plane": '<path d="M3 11l18-8-8 18-2-8z"/><path d="M13 13l6-10"/>',
+      "shield-halved": '<path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><path d="M12 2v20"/>',
+      "database": '<ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v14c0 1.7 3.1 3 7 3s7-1.3 7-3V5"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/>',
+      "comments": '<path d="M4 4h13a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2z"/>'
+    };
+    function iconSvg(name, extraClass) {
+      const key = (name || '').replace(/^fa-/, '');
+      const inner = ICONS[key] || '';
+      const cls = ('icon ' + (extraClass || '')).trim();
+      return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+    }
+
+    // System Interactive States
+    let enableAgentMovement = true;
+    let enableEnvAnimation = true;
+    let enableCamFloat = true;
+    let showNames = true;
+    let showBubbles = true;
+
+    // First-Person Character State
+    let fpCamera, fpControls;
+    let isFirstPerson = false;
+    let gameStarted = false;
+    const fpVelocity = new THREE.Vector3();
+    const fpMoveState = { forward: false, backward: false, left: false, right: false, sprint: false };
+    let canInteractKey = null;
+    let fpBobTime = 0;
+    let lastFrameTime = 0;
+    let fpCurrentFov = 72;
+    let fpLean = 0;
+    const FP_EYE_HEIGHT = 1.7;
+    const FP_SPEED = 6.0;
+    const FP_SPRINT_MULT = 1.7;
+    const FP_ACCEL = 40.0;
+    const FP_FOV_BASE = 72;
+    const FP_FOV_SPRINT = 78;
+    const PLAYER_RADIUS = 0.6;
+    let insideBuildingKey = null;
+    let outdoorReturnPos = null;
+    let agentInteriors = {};
+    let agentCoreMeshes = [];
+
+    // Environmental Parameters: Day/Night, Weather, Season
+    let currentMode = 'night';  // 'day' or 'night'
+    let currentWeather = 'clear'; // 'clear' or 'rain'
+    let currentSeason = 'autumn'; // 'spring', 'summer', 'autumn', 'winter'
+
+    // Season Visual Color Schemes (Dark Fantasy Palettes)
+    const seasonPalettes = {
+      spring: {
+        ground: 0x1a2e1e,      // Eerie Emerald Dark Grass
+        groundSub: 0x0f1f13,   // Obsidian Green Base
+        leaves: 0x8b5cf6,      // Spectral Violet Blossom Leaves
+        path: 0x2d233e,        // Mystic Purple Pathway
+        fogDay: 0x181c2b,
+        fogNight: 0x0b0914,
+        skyDay: 0x1e2638,
+        skyNight: 0x090710
+      },
+      summer: {
+        ground: 0x2b1313,      // Blood Red Scorched Earth
+        groundSub: 0x1a0b0b,   // Dark Crimson Underlayer
+        leaves: 0xe11d48,      // Crimson Blood Leaves
+        path: 0x3d211a,        // Ash Path
+        fogDay: 0x2a1515,
+        fogNight: 0x0f0708,
+        skyDay: 0x3b1618,
+        skyNight: 0x0d0405
+      },
+      autumn: {
+        ground: 0x1f1728,      // Obsidian Dark Violet Earth
+        groundSub: 0x130e1a,   // Deep Purple Base
+        leaves: 0xf59e0b,      // Amber Pumpkin Glow Leaves
+        path: 0x2e1f3b,        // Gothic Path
+        fogDay: 0x1c1729,
+        fogNight: 0x0c0915,
+        skyDay: 0x261e38,
+        skyNight: 0x080612
+      },
+      winter: {
+        ground: 0x1e293b,      // Frozen Slate Ice Earth
+        groundSub: 0x0f172a,   // Deep Frost Sub
+        leaves: 0x38bdf8,      // Frozen Cyan Ice Crystals
+        path: 0x334155,        // Frozen Path
+        fogDay: 0x1a2332,
+        fogNight: 0x090e17,
+        skyDay: 0x1e293b,
+        skyNight: 0x050a12
+      }
+    };
+
+    // Agent Data & Waypoint Paths
+    const agentsData = {
+      claude: {
+        id: 'claude',
+        name: 'Claude Citadel',
+        bubble: 'Giữ cổng triệu hồi W43',
+        icon: 'fa-crown',
+        color: '#a855f7',
+        pos: { x: -8, y: 0, z: -6 },
+        waypoints: [
+          { x: -8, z: -4 }, { x: -5, z: -1 }, { x: -8, z: -4 }
+        ],
+        task: 'Phê duyệt kịch bản & giữ cổng QA',
+        desc: 'Kiểm soát chất lượng nội dung trước khi chuyển sang khâu thiết kế.',
+        progress: 100
+      },
+      research: {
+        id: 'research',
+        name: 'Nghiên cứu',
+        bubble: 'Quét trận đồ TikTok sang QA',
+        icon: 'fa-magnifying-glass',
+        color: '#c084fc',
+        pos: { x: 5, y: 0, z: -9 },
+        waypoints: [
+          { x: 5, z: -7 }, { x: 1, z: -5 }, { x: -4, z: -4 }, { x: 5, z: -7 }
+        ],
+        task: 'Quét 30 video TikTok & Nghiên cứu Content',
+        desc: 'Thu thập ý kiến khách hàng, lọc từ khóa xu hướng.',
+        progress: 80
+      },
+      writer: {
+        id: 'writer',
+        name: 'Viết bài',
+        bubble: 'Khắc kịch bản ma mị...',
+        icon: 'fa-pen-nib',
+        color: '#f59e0b',
+        pos: { x: 12, y: 0, z: -2 },
+        waypoints: [
+          { x: 10, z: -1 }, { x: 6, z: 2 }, { x: 10, z: -1 }
+        ],
+        task: 'Viết kịch bản video ngắn 17s & bài đăng',
+        desc: 'Soạn thảo kịch bản theo công thức chuyển đổi cao.',
+        progress: 90
+      },
+      designer: {
+        id: 'designer',
+        name: 'Thiết kế',
+        bubble: 'Dựng ảo ảnh G4 truyền QA',
+        icon: 'fa-wand-magic-sparkles',
+        color: '#f43f5e',
+        pos: { x: 10, y: 0, z: 8 },
+        waypoints: [
+          { x: 8, z: 6 }, { x: 3, z: 8 }, { x: 8, z: 6 }
+        ],
+        task: 'Dựng video 17s (mạng G17) & thiết kế hình ảnh',
+        desc: 'Xử lý visual, ghép nhạc nền và kết xuất video.',
+        progress: 60
+      },
+      publisher: {
+        id: 'publisher',
+        name: 'Đăng bài',
+        bubble: 'Triệu hồi tin đăng...',
+        icon: 'fa-paper-plane',
+        color: '#10b981',
+        pos: { x: 0, y: 0, z: 11 },
+        waypoints: [
+          { x: 0, z: 9 }, { x: -4, z: 7 }, { x: 0, z: 9 }
+        ],
+        task: 'Lên lịch xuất bản bài đăng đa kênh',
+        desc: 'Đăng tải nội dung tự động lên TikTok, Facebook Reels.',
+        progress: 45
+      },
+      qc: {
+        id: 'qc',
+        name: 'GA - QC',
+        bubble: 'Bảo vệ phong ấn thương hiệu!',
+        icon: 'fa-shield-halved',
+        color: '#22d3ee',
+        pos: { x: -10, y: 0, z: 8 },
+        waypoints: [
+          { x: -8, z: 6 }, { x: -5, z: 2 }, { x: -8, z: 6 }
+        ],
+        task: 'Kiểm duyệt chất lượng & thương hiệu',
+        desc: 'Đảm bảo đúng quy chuẩn brand, không vi phạm chính sách.',
+        progress: 95
+      },
+      analytics: {
+        id: 'analytics',
+        name: 'Đa số liệu',
+        bubble: 'Soi gương thần chỉ số TikTok',
+        icon: 'fa-database',
+        color: '#94a3b8',
+        pos: { x: -13, y: 0, z: -2 },
+        waypoints: [
+          { x: -11, z: -1 }, { x: -7, z: -3 }, { x: -11, z: -1 }
+        ],
+        task: 'Phân tích đo lường chỉ số hiệu quả',
+        desc: 'Đo lường ROI, CPM, CTR và lượt bình luận.',
+        progress: 88
+      },
+      comments: {
+        id: 'comments',
+        name: 'Trả lời comment',
+        bubble: 'Thưởng thức trà bóng đêm~',
+        icon: 'fa-comments',
+        color: '#f97316',
+        pos: { x: -2, y: 0, z: -2 },
+        waypoints: [
+          { x: -2, z: -1 }, { x: 1, z: 1 }, { x: -2, z: -1 }
+        ],
+        task: 'Trả lời tin nhắn & bình luận tự động',
+        desc: 'Duy trì phản hồi 24/7 với tone-of-voice thân thiện.',
+        progress: 92
+      }
+    };
+
+    // Building collision / interaction data (derived from agentsData positions)
+    const buildingStations = Object.keys(agentsData).map(key => {
+      const isCastle = key === 'claude';
+      const isKiosk = key === 'comments';
+      return {
+        key,
+        x: agentsData[key].pos.x,
+        z: agentsData[key].pos.z,
+        collisionRadius: isCastle ? 5.5 : (isKiosk ? 3.3 : 3.0),
+        interactRadius: isCastle ? 7 : (isKiosk ? 4.8 : 4.5),
+        name: agentsData[key].name
+      };
+    });
+    const obstaclesOnly = [
+      { x: 0, z: 0, collisionRadius: 3.3 } // central fountain
+    ];
+
+    // Global Scene Variables
+    let scene, camera, renderer, controls;
+    let dirLight, ambientLight, moonGlowLight;
+    let islandMesh, baseMesh, pathMesh;
+    let agents3D = {};
+    let animatedTrees = [];
+    let treeMeshes = [];
+    let animatedClouds = [];
+    let waterMesh, fountainParticles = [], fountainFlameMesh;
+    let rainParticles, snowParticles;
+    let ambientParticles;
+    let labelsContainer = document.getElementById('labels-container');
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    window.onload = function() {
+      initScene();
+      buildTownTerrain();
+      buildBuildings();
+      buildDecorations();
+      buildFountainAndWater();
+      initWeatherParticles();
+      spawnAmbientParticles();
+      spawnAgents();
+      initAgentPathways();
+      buildAgentInteriors();
+      initFirstPerson();
+
+      // Set Initial Environment
+      updateEnvironmentTheme();
+
+      animate();
+
+      window.addEventListener('resize', onWindowResize);
+      window.addEventListener('click', onSceneClick);
+    };
+
+    function initScene() {
+      const canvas = document.getElementById('webgl-canvas');
+      scene = new THREE.Scene();
+
+      const palette = seasonPalettes[currentSeason];
+      scene.background = new THREE.Color(palette.skyNight);
+      scene.fog = new THREE.FogExp2(palette.fogNight, 0.015);
+
+      const aspect = window.innerWidth / window.innerHeight;
+      camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 1000);
+      camera.position.set(38, 38, 38);
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2.15;
+      controls.minDistance = 15;
+      controls.maxDistance = 85;
+      controls.target.set(0, 0, 0);
+
+      // Low Ambient Mystical Light
+      ambientLight = new THREE.AmbientLight(0x4c1d95, 0.6);
+      scene.add(ambientLight);
+
+      // Directional Light (Moon / Dark Sun)
+      dirLight = new THREE.DirectionalLight(0xa855f7, 0.8);
+      dirLight.position.set(25, 40, 15);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 1024;
+      dirLight.shadow.mapSize.height = 1024;
+      dirLight.shadow.bias = -0.0005;
+      dirLight.shadow.camera.near = 0.5;
+      dirLight.shadow.camera.far = 120;
+      const d = 30;
+      dirLight.shadow.camera.left = -d;
+      dirLight.shadow.camera.right = d;
+      dirLight.shadow.camera.top = d;
+      dirLight.shadow.camera.bottom = -d;
+      scene.add(dirLight);
+
+      // Mystical Glowing Point Light at Citadel Center
+      moonGlowLight = new THREE.PointLight(0xa855f7, 2, 35);
+      moonGlowLight.position.set(0, 8, 0);
+      scene.add(moonGlowLight);
+    }
+
+    // Gothic Dark Terrain Platform
+    function buildTownTerrain() {
+      const palette = seasonPalettes[currentSeason];
+
+      const islandGeo = new THREE.BoxGeometry(40, 2, 36);
+      const islandMat = new THREE.MeshLambertMaterial({ color: palette.ground });
+      islandMesh = new THREE.Mesh(islandGeo, islandMat);
+      islandMesh.position.y = -1;
+      islandMesh.receiveShadow = true;
+      scene.add(islandMesh);
+
+      const baseGeo = new THREE.BoxGeometry(40.8, 1.5, 36.8);
+      const baseMat = new THREE.MeshLambertMaterial({ color: palette.groundSub });
+      baseMesh = new THREE.Mesh(baseGeo, baseMat);
+      baseMesh.position.y = -2.2;
+      scene.add(baseMesh);
+
+      // Mystical Ritual Ring Pathway
+      const pathGeo = new THREE.RingGeometry(4, 13, 32);
+      const pathMat = new THREE.MeshLambertMaterial({ color: palette.path, side: THREE.DoubleSide });
+      pathMesh = new THREE.Mesh(pathGeo, pathMat);
+      pathMesh.rotation.x = -Math.PI / 2;
+      pathMesh.position.y = 0.02;
+      pathMesh.receiveShadow = true;
+      scene.add(pathMesh);
+    }
+
+    function createGothicHouse(colorRoof, colorWall) {
+      const group = new THREE.Group();
+
+      const wallGeo = new THREE.BoxGeometry(4, 3.5, 4);
+      const wallMat = new THREE.MeshLambertMaterial({ color: colorWall });
+      const wall = new THREE.Mesh(wallGeo, wallMat);
+      wall.position.y = 1.75;
+      wall.castShadow = true;
+      wall.receiveShadow = true;
+      group.add(wall);
+
+      // Gothic Steep Roof
+      const roofGeo = new THREE.ConeGeometry(3.5, 3.8, 4);
+      const roofMat = new THREE.MeshLambertMaterial({ color: colorRoof });
+      const roof = new THREE.Mesh(roofGeo, roofMat);
+      roof.position.y = 5.2;
+      roof.rotation.y = Math.PI / 4;
+      roof.castShadow = true;
+      group.add(roof);
+
+      // Spire Tip
+      const spire = new THREE.Mesh(
+        new THREE.ConeGeometry(0.3, 1.5, 4),
+        new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+      );
+      spire.position.y = 7.3;
+      group.add(spire);
+
+      // Glowing Gothic Door
+      const door = new THREE.Mesh(
+        new THREE.BoxGeometry(1.2, 2, 0.2),
+        new THREE.MeshBasicMaterial({ color: 0x581c87 })
+      );
+      door.position.set(0, 1, 2.05);
+      group.add(door);
+
+      return group;
+    }
+
+    function buildBuildings() {
+      // Main Claude Gothic Citadel Castle - Purple/Amber Spectral Spires
+      const castleGroup = new THREE.Group();
+      const castleMain = new THREE.Mesh(
+        new THREE.BoxGeometry(7, 6, 6),
+        new THREE.MeshLambertMaterial({ color: 0x2e1065 })
+      );
+      castleMain.position.y = 3;
+      castleMain.castShadow = true;
+      castleGroup.add(castleMain);
+
+      const towerGeo = new THREE.CylinderGeometry(1.2, 1.4, 8, 16);
+      const towerRoofGeo = new THREE.ConeGeometry(1.6, 4.5, 16);
+      const towerMat = new THREE.MeshLambertMaterial({ color: 0x3b0764 });
+      const roofMat = new THREE.MeshLambertMaterial({ color: 0x581c87 });
+
+      [[-3.5, -3], [3.5, -3], [-3.5, 3], [3.5, 3]].forEach(p => {
+        const t = new THREE.Mesh(towerGeo, towerMat);
+        t.position.set(p[0], 4, p[1]);
+        t.castShadow = true;
+        
+        const r = new THREE.Mesh(towerRoofGeo, roofMat);
+        r.position.set(p[0], 10, p[1]);
+        r.castShadow = true;
+
+        const tip = new THREE.Mesh(
+          new THREE.SphereGeometry(0.3, 8, 8),
+          new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+        );
+        tip.position.set(p[0], 12.3, p[1]);
+
+        castleGroup.add(t);
+        castleGroup.add(r);
+        castleGroup.add(tip);
+      });
+
+      castleGroup.position.set(agentsData.claude.pos.x, 0, agentsData.claude.pos.z);
+      scene.add(castleGroup);
+
+      // Stations with Dark Fantasy Aesthetics
+      const resHouse = createGothicHouse(0x4c1d95, 0x1e1b4b);
+      resHouse.position.set(agentsData.research.pos.x, 0, agentsData.research.pos.z);
+      scene.add(resHouse);
+
+      const writerHouse = createGothicHouse(0x78350f, 0x1c1917);
+      writerHouse.position.set(agentsData.writer.pos.x, 0, agentsData.writer.pos.z);
+      scene.add(writerHouse);
+
+      const desHouse = createGothicHouse(0x881337, 0x270515);
+      desHouse.position.set(agentsData.designer.pos.x, 0, agentsData.designer.pos.z);
+      scene.add(desHouse);
+
+      const pubHouse = createGothicHouse(0x064e3b, 0x022c22);
+      pubHouse.position.set(agentsData.publisher.pos.x, 0, agentsData.publisher.pos.z);
+      scene.add(pubHouse);
+
+      const qcHouse = createGothicHouse(0x164e63, 0x083344);
+      qcHouse.position.set(agentsData.qc.pos.x, 0, agentsData.qc.pos.z);
+      scene.add(qcHouse);
+
+      const anaHouse = createGothicHouse(0x334155, 0x0f172a);
+      anaHouse.position.set(agentsData.analytics.pos.x, 0, agentsData.analytics.pos.z);
+      scene.add(anaHouse);
+
+      // Dark Elixir Kiosk
+      const kioskGroup = new THREE.Group();
+      const kioskBase = new THREE.Mesh(
+        new THREE.CylinderGeometry(3, 3, 2.5, 8),
+        new THREE.MeshLambertMaterial({ color: 0x451a03 })
+      );
+      kioskBase.position.y = 1.25;
+      kioskBase.castShadow = true;
+      kioskGroup.add(kioskBase);
+
+      const umbrella = new THREE.Mesh(
+        new THREE.ConeGeometry(4, 2, 8),
+        new THREE.MeshLambertMaterial({ color: 0x7c2d12 })
+      );
+      umbrella.position.y = 4;
+      umbrella.castShadow = true;
+      kioskGroup.add(umbrella);
+
+      kioskGroup.position.set(agentsData.comments.pos.x, 0, agentsData.comments.pos.z);
+      scene.add(kioskGroup);
+    }
+
+    // Dynamic Gothic Trees & Clouds
+    function buildDecorations() {
+      const palette = seasonPalettes[currentSeason];
+      const treeGeo = new THREE.DodecahedronGeometry(1.6);
+      const trunkGeo = new THREE.CylinderGeometry(0.25, 0.45, 2.2);
+      const trunkMat = new THREE.MeshLambertMaterial({ color: 0x261810 });
+
+      const treePositions = [
+        [-15, 12], [15, -12], [-16, -12], [16, 12],
+        [-5, -13], [5, 14], [-7, 13], [7, -14]
+      ];
+
+      treePositions.forEach((pos, idx) => {
+        const tree = new THREE.Group();
+        const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+        trunk.position.y = 1.1;
+        trunk.castShadow = true;
+        tree.add(trunk);
+
+        const treeMat = new THREE.MeshLambertMaterial({ color: palette.leaves });
+        const leaves = new THREE.Mesh(treeGeo, treeMat);
+        leaves.position.y = 2.8;
+        leaves.castShadow = true;
+        tree.add(leaves);
+
+        tree.position.set(pos[0], 0, pos[1]);
+        tree.userData = { phase: idx * 0.5 };
+        scene.add(tree);
+
+        treeMeshes.push(leaves);
+        animatedTrees.push(leaves);
+      });
+
+      // Dark Gloomy Clouds
+      const cloudGeo = new THREE.DodecahedronGeometry(2.2);
+      const cloudMat = new THREE.MeshLambertMaterial({ color: 0x1e1b2e, transparent: true, opacity: 0.8 });
+
+      for(let i = 0; i < 8; i++) {
+        const cloud = new THREE.Group();
+        const m1 = new THREE.Mesh(cloudGeo, cloudMat);
+        const m2 = new THREE.Mesh(cloudGeo, cloudMat);
+        m2.position.set(1.6, 0.2, 0);
+        m2.scale.set(0.75,0.75,0.75);
+        cloud.add(m1);
+        cloud.add(m2);
+
+        cloud.position.set(
+          (Math.random() - 0.5) * 55,
+          16 + Math.random() * 6,
+          (Math.random() - 0.5) * 55
+        );
+        cloud.userData = { speed: 0.02 + Math.random() * 0.03 };
+        scene.add(cloud);
+        animatedClouds.push(cloud);
+      }
+    }
+
+    // Mystical Central Flame Fountain
+    function buildFountainAndWater() {
+      const fountainGroup = new THREE.Group();
+      const pool = new THREE.Mesh(
+        new THREE.CylinderGeometry(2.8, 2.8, 0.6, 16),
+        new THREE.MeshLambertMaterial({ color: 0x1f192b })
+      );
+      pool.position.y = 0.3;
+      fountainGroup.add(pool);
+
+      const waterGeo = new THREE.CylinderGeometry(2.5, 2.5, 0.5, 32);
+      const waterMat = new THREE.MeshLambertMaterial({
+        color: 0x7e22ce,
+        transparent: true,
+        opacity: 0.85
+      });
+      waterMesh = new THREE.Mesh(waterGeo, waterMat);
+      waterMesh.position.y = 0.42;
+      fountainGroup.add(waterMesh);
+
+      // Central Flame Orb
+      const flameGeo = new THREE.OctahedronGeometry(0.8, 2);
+      const flameMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, wireframe: true });
+      fountainFlameMesh = new THREE.Mesh(flameGeo, flameMat);
+      fountainFlameMesh.position.y = 1.5;
+      fountainGroup.add(fountainFlameMesh);
+
+      // Mystical Fountain Sparks
+      const pGeo = new THREE.SphereGeometry(0.08, 8, 8);
+      const pMat = new THREE.MeshBasicMaterial({ color: 0xc084fc });
+
+      for(let i=0; i<16; i++) {
+        const p = new THREE.Mesh(pGeo, pMat);
+        p.position.set(0, 0.7, 0);
+        p.userData = {
+          vx: (Math.random() - 0.5) * 0.04,
+          vy: 0.06 + Math.random() * 0.05,
+          vz: (Math.random() - 0.5) * 0.04
+        };
+        fountainGroup.add(p);
+        fountainParticles.push(p);
+      }
+
+      fountainGroup.position.set(0, 0, 0);
+      scene.add(fountainGroup);
+    }
+
+    // Build a walk-in interior room for each agent station, tucked far from
+    // the outdoor town so it never visually overlaps it. Pressing [E] near a
+    // building teleports the player's rig here; [E] again teleports back out.
+    const AGENT_ROOM_BASE_X = 160;
+    const AGENT_ROOM_SPACING = 26;
+    const AGENT_ROOM_W = 11;
+    const AGENT_ROOM_D = 11;
+    const AGENT_ROOM_H = 6;
+    const AGENT_ROOM_DOOR_W = 3;
+
+    function buildAgentInteriors() {
+      const wallMat = new THREE.MeshLambertMaterial({ color: 0x1a1428 });
+      const floorMat = new THREE.MeshLambertMaterial({ color: 0x120e1c });
+      const ceilMat = new THREE.MeshLambertMaterial({ color: 0x0a0712 });
+
+      Object.keys(agentsData).forEach((key, idx) => {
+        const data = agentsData[key];
+        const colorHex = parseInt(data.color.replace('#', '0x'));
+        const ox = AGENT_ROOM_BASE_X + idx * AGENT_ROOM_SPACING;
+        const oz = 0;
+        const W = AGENT_ROOM_W, D = AGENT_ROOM_D, H = AGENT_ROOM_H, doorW = AGENT_ROOM_DOOR_W;
+
+        const room = new THREE.Group();
+
+        // Floor & ceiling
+        const floor = new THREE.Mesh(new THREE.BoxGeometry(W, 0.4, D), floorMat);
+        floor.position.set(0, -0.2, 0);
+        floor.receiveShadow = true;
+        room.add(floor);
+
+        const ceiling = new THREE.Mesh(new THREE.BoxGeometry(W, 0.4, D), ceilMat);
+        ceiling.position.set(0, H, 0);
+        room.add(ceiling);
+
+        // Glowing skylight ring in the agent's color
+        const skylight = new THREE.Mesh(
+          new THREE.RingGeometry(1.2, 2.3, 24),
+          new THREE.MeshBasicMaterial({ color: colorHex, side: THREE.DoubleSide, transparent: true, opacity: 0.55 })
+        );
+        skylight.rotation.x = Math.PI / 2;
+        skylight.position.set(0, H - 0.21, -1.5);
+        room.add(skylight);
+
+        // Back + side walls
+        const backWall = new THREE.Mesh(new THREE.BoxGeometry(W, H, 0.4), wallMat);
+        backWall.position.set(0, H / 2, -D / 2);
+        room.add(backWall);
+
+        const eastWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, H, D), wallMat);
+        eastWall.position.set(W / 2, H / 2, 0);
+        room.add(eastWall);
+
+        const westWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, H, D), wallMat);
+        westWall.position.set(-W / 2, H / 2, 0);
+        room.add(westWall);
+
+        // Front wall with a door gap
+        const segW = (W - doorW) / 2;
+        const frontA = new THREE.Mesh(new THREE.BoxGeometry(segW, H, 0.4), wallMat);
+        frontA.position.set(-(doorW / 2 + segW / 2), H / 2, D / 2);
+        room.add(frontA);
+        const frontB = new THREE.Mesh(new THREE.BoxGeometry(segW, H, 0.4), wallMat);
+        frontB.position.set(doorW / 2 + segW / 2, H / 2, D / 2);
+        room.add(frontB);
+        const lintelH = H - 2.6;
+        const lintel = new THREE.Mesh(new THREE.BoxGeometry(doorW, lintelH, 0.4), wallMat);
+        lintel.position.set(0, H - lintelH / 2, D / 2);
+        room.add(lintel);
+
+        // Glowing door frame trim
+        const trimMat = new THREE.MeshBasicMaterial({ color: colorHex });
+        const frameGlow = new THREE.Mesh(new THREE.BoxGeometry(doorW + 0.2, 2.6, 0.15), trimMat);
+        frameGlow.position.set(0, 1.3, D / 2 - 0.1);
+        room.add(frameGlow);
+
+        const trimBarBack = new THREE.Mesh(new THREE.BoxGeometry(W - 1, 0.15, 0.12), trimMat);
+        trimBarBack.position.set(0, 2.6, -D / 2 + 0.25);
+        room.add(trimBarBack);
+
+        // Central altar displaying the agent's core
+        const pedestal = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.1, 1.35, 0.9, 8),
+          new THREE.MeshLambertMaterial({ color: 0x1f1728 })
+        );
+        pedestal.position.set(0, 0.45, -2.6);
+        pedestal.castShadow = true;
+        room.add(pedestal);
+
+        const core = new THREE.Mesh(
+          new THREE.IcosahedronGeometry(0.65, 0),
+          new THREE.MeshBasicMaterial({ color: colorHex, wireframe: true })
+        );
+        core.position.set(0, 1.55, -2.6);
+        room.add(core);
+        agentCoreMeshes.push(core);
+
+        // Room light tinted with the agent's color, flickered in the animate loop
+        const roomLight = new THREE.PointLight(colorHex, 1.8, 14);
+        roomLight.position.set(0, 3.2, -1.2);
+        room.add(roomLight);
+
+        // Two wall sconces flanking the door for depth
+        const sconceGeo = new THREE.SphereGeometry(0.14, 8, 8);
+        const sconceMat = new THREE.MeshBasicMaterial({ color: colorHex });
+        const sconceL = new THREE.Mesh(sconceGeo, sconceMat);
+        sconceL.position.set(-W / 2 + 0.5, 2.2, D / 2 - 1);
+        room.add(sconceL);
+        const sconceLight = new THREE.PointLight(colorHex, 1, 6);
+        sconceLight.position.copy(sconceL.position);
+        room.add(sconceLight);
+        const sconceR = new THREE.Mesh(sconceGeo, sconceMat);
+        sconceR.position.set(W / 2 - 0.5, 2.2, D / 2 - 1);
+        room.add(sconceR);
+        const sconceRLight = new THREE.PointLight(colorHex, 1, 6);
+        sconceRLight.position.copy(sconceR.position);
+        room.add(sconceRLight);
+
+        // Drifting mote particles for atmosphere
+        const moteCount = 22;
+        const moteGeo = new THREE.BufferGeometry();
+        const motePos = new Float32Array(moteCount * 3);
+        for (let i = 0; i < moteCount * 3; i += 3) {
+          motePos[i] = (Math.random() - 0.5) * (W - 1.5);
+          motePos[i + 1] = 0.3 + Math.random() * (H - 1);
+          motePos[i + 2] = (Math.random() - 0.5) * (D - 1.5);
+        }
+        moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3));
+        const moteMat = new THREE.PointsMaterial({ color: colorHex, size: 0.06, transparent: true, opacity: 0.55 });
+        const motes = new THREE.Points(moteGeo, moteMat);
+        room.add(motes);
+
+        room.position.set(ox, 0, oz);
+        scene.add(room);
+
+        const half = PLAYER_RADIUS + 0.3;
+        agentInteriors[key] = {
+          origin: { x: ox, z: oz },
+          entryPoint: { x: ox, z: oz + D / 2 - 1.6 },
+          altar: { x: ox, z: oz - 2.6 },
+          bounds: {
+            minX: ox - W / 2 + half, maxX: ox + W / 2 - half,
+            minZ: oz - D / 2 + half, maxZ: oz + D / 2 - half
+          },
+          light: roomLight,
+          lightBaseIntensity: 1.8,
+          flickerSeed: Math.random() * 10,
+          motes: motes,
+          motePositions: motePos,
+          moteBoundsY: H - 1
+        };
+      });
+    }
+
+    // Weather Particles: Rain & Snow Systems
+    function initWeatherParticles() {
+      // 1. Rain System
+      const rainCount = 600;
+      const rainGeo = new THREE.BufferGeometry();
+      const rainPos = new Float32Array(rainCount * 3);
+
+      for(let i = 0; i < rainCount * 3; i += 3) {
+        rainPos[i] = (Math.random() - 0.5) * 50;
+        rainPos[i+1] = Math.random() * 30;
+        rainPos[i+2] = (Math.random() - 0.5) * 50;
+      }
+
+      rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+      const rainMat = new THREE.PointsMaterial({
+        color: 0x38bdf8,
+        size: 0.15,
+        transparent: true,
+        opacity: 0.7
+      });
+      rainParticles = new THREE.Points(rainGeo, rainMat);
+      rainParticles.visible = false;
+      scene.add(rainParticles);
+
+      // 2. Snow System
+      const snowCount = 400;
+      const snowGeo = new THREE.BufferGeometry();
+      const snowPos = new Float32Array(snowCount * 3);
+
+      for(let i = 0; i < snowCount * 3; i += 3) {
+        snowPos[i] = (Math.random() - 0.5) * 50;
+        snowPos[i+1] = Math.random() * 30;
+        snowPos[i+2] = (Math.random() - 0.5) * 50;
+      }
+
+      snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPos, 3));
+      const snowMat = new THREE.PointsMaterial({
+        color: 0xf8fafc,
+        size: 0.25,
+        transparent: true,
+        opacity: 0.85
+      });
+      snowParticles = new THREE.Points(snowGeo, snowMat);
+      snowParticles.visible = false;
+      scene.add(snowParticles);
+    }
+
+    // Sparkle Particles (Magical Embers)
+    function spawnAmbientParticles() {
+      const pGeo = new THREE.BufferGeometry();
+      const count = 60;
+      const pos = new Float32Array(count * 3);
+
+      for(let i=0; i<count*3; i+=3) {
+        pos[i] = (Math.random() - 0.5) * 45;
+        pos[i+1] = 2 + Math.random() * 15;
+        pos[i+2] = (Math.random() - 0.5) * 45;
+      }
+
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const pMat = new THREE.PointsMaterial({ color: 0xa855f7, size: 0.35, transparent: true, opacity: 0.7 });
+      ambientParticles = new THREE.Points(pGeo, pMat);
+      scene.add(ambientParticles);
+    }
+
+    // Spawn AI Agents (Dark Fantasy Mages & Mini Creatures)
+    function spawnAgents() {
+      const headGeo = new THREE.SphereGeometry(0.6, 16, 16);
+      const bodyGeo = new THREE.CylinderGeometry(0.35, 0.65, 1.3, 16);
+      const hatGeo = new THREE.ConeGeometry(0.7, 1.2, 16);
+
+      Object.keys(agentsData).forEach(key => {
+        const data = agentsData[key];
+        const agentGroup = new THREE.Group();
+
+        const colorHex = parseInt(data.color.replace('#', '0x'));
+        const mat = new THREE.MeshLambertMaterial({ color: colorHex });
+
+        // Head
+        const head = new THREE.Mesh(headGeo, mat);
+        head.position.y = 1.6;
+        head.castShadow = true;
+        agentGroup.add(head);
+
+        // Body Robe
+        const body = new THREE.Mesh(bodyGeo, mat);
+        body.position.y = 0.7;
+        body.castShadow = true;
+        agentGroup.add(body);
+
+        // Wizard Hat
+        const hat = new THREE.Mesh(hatGeo, new THREE.MeshLambertMaterial({ color: 0x1e1b2e }));
+        hat.position.y = 2.4;
+        hat.rotation.x = -0.15;
+        hat.castShadow = true;
+        agentGroup.add(hat);
+
+        // Glowing Eyes
+        const eyeGeo = new THREE.SphereGeometry(0.08, 8, 8);
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+        const e1 = new THREE.Mesh(eyeGeo, eyeMat);
+        e1.position.set(0.2, 1.7, 0.5);
+        const e2 = new THREE.Mesh(eyeGeo, eyeMat);
+        e2.position.set(-0.2, 1.7, 0.5);
+        agentGroup.add(e1);
+        agentGroup.add(e2);
+
+        // Magic Tome/Scroll
+        const book = new THREE.Mesh(
+          new THREE.BoxGeometry(0.5, 0.1, 0.4),
+          new THREE.MeshBasicMaterial({ color: 0xd97706 })
+        );
+        book.position.set(0, 1.1, 0.65);
+        agentGroup.add(book);
+
+        agentGroup.position.set(data.pos.x, 0, data.pos.z);
+        agentGroup.userData = { id: key };
+        scene.add(agentGroup);
+
+        agents3D[key] = agentGroup;
+
+        // 2D Label Overlay
+        createOverlayLabel(key, data);
+      });
+    }
+
+    // GSAP Waypoint Agent Movement System
+    function initAgentPathways() {
+      Object.keys(agentsData).forEach(key => {
+        const agent = agents3D[key];
+        const waypoints = agentsData[key].waypoints;
+        if (!waypoints || waypoints.length === 0) return;
+
+        let tl = gsap.timeline({ repeat: -1, delay: Math.random() * 2 });
+
+        waypoints.forEach(wp => {
+          tl.to(agent.position, {
+            x: wp.x,
+            z: wp.z,
+            duration: 4 + Math.random() * 2,
+            ease: "power1.inOut",
+            onStart: () => {
+              if (enableAgentMovement) {
+                agent.lookAt(wp.x, agent.position.y, wp.z);
+              }
+            }
+          }).to(agent.position, {
+            y: 0,
+            duration: 1.5
+          });
+        });
+      });
+    }
+
+    // ===================== FIRST-PERSON CHARACTER CONTROLLER =====================
+
+    function initFirstPerson() {
+      fpCamera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 1000);
+      fpControls = new THREE.PointerLockControls(fpCamera, renderer.domElement);
+
+      const rig = fpControls.getObject();
+      rig.position.set(0, FP_EYE_HEIGHT, 15);
+      scene.add(rig);
+
+      document.addEventListener('keydown', onFPKeyDown);
+      document.addEventListener('keyup', onFPKeyUp);
+
+      fpControls.addEventListener('lock', () => {
+        document.getElementById('fp-pointer-hint').classList.add('hidden');
+      });
+      fpControls.addEventListener('unlock', () => {
+        if (isFirstPerson) {
+          document.getElementById('fp-pointer-hint').classList.remove('hidden');
+        }
+      });
+    }
+
+    function isTypingTarget(e) {
+      const tag = (e.target && e.target.tagName) || '';
+      return tag === 'INPUT' || tag === 'TEXTAREA';
+    }
+
+    function onFPKeyDown(e) {
+      if (isTypingTarget(e)) return;
+      switch (e.code) {
+        case 'KeyW': case 'ArrowUp': fpMoveState.forward = true; break;
+        case 'KeyS': case 'ArrowDown': fpMoveState.backward = true; break;
+        case 'KeyA': case 'ArrowLeft': fpMoveState.left = true; break;
+        case 'KeyD': case 'ArrowRight': fpMoveState.right = true; break;
+        case 'ShiftLeft': case 'ShiftRight': fpMoveState.sprint = true; break;
+        case 'KeyE': tryInteract(); break;
+        case 'KeyM': toggleAgentMovement(); break;
+        case 'KeyV': toggleEnvAnimation(); break;
+        case 'KeyN': toggleNames(); break;
+        case 'KeyB': toggleBubbles(); break;
+      }
+    }
+
+    function onFPKeyUp(e) {
+      if (isTypingTarget(e)) return;
+      switch (e.code) {
+        case 'KeyW': case 'ArrowUp': fpMoveState.forward = false; break;
+        case 'KeyS': case 'ArrowDown': fpMoveState.backward = false; break;
+        case 'KeyA': case 'ArrowLeft': fpMoveState.left = false; break;
+        case 'KeyD': case 'ArrowRight': fpMoveState.right = false; break;
+        case 'ShiftLeft': case 'ShiftRight': fpMoveState.sprint = false; break;
+      }
+    }
+
+    function enterAsGuest() {
+      const nameInput = document.getElementById('guest-name-input');
+      const name = (nameInput.value || '').trim() || 'Lữ khách';
+      document.getElementById('player-name-display').textContent = name;
+
+      const loginScreen = document.getElementById('login-screen');
+      loginScreen.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => loginScreen.classList.add('hidden'), 500);
+
+      gameStarted = true;
+      enterFirstPerson();
+      if (window.MP) MP.startPresenceLoop(name);
+    }
+
+    function enterFirstPerson() {
+      if (isFirstPerson) return;
+      const flash = document.getElementById('enter-flash');
+      flash.classList.remove('opacity-0');
+      setTimeout(() => {
+        isFirstPerson = true;
+        controls.enabled = false;
+        enableCamFloat = false;
+        document.getElementById('btn-cam-float')?.classList.remove('active');
+        labelsContainer.style.display = 'none';
+        document.getElementById('fp-hud').classList.remove('hidden');
+        document.getElementById('fp-minimap')?.classList.remove('hidden');
+        document.getElementById('fp-mode-btn')?.classList.add('active');
+        document.getElementById('overview-mode-btn')?.classList.remove('active');
+        fpControls.lock();
+        flash.classList.add('opacity-0');
+      }, 160);
+    }
+
+    // Shared by "Toàn cảnh" (which can be pressed from inside a building) and
+    // the normal walk-out-the-door exit, so fog/lighting always get restored.
+    function restoreOutdoorAmbience() {
+      if (savedOutdoorFog) {
+        scene.fog.color.setHex(savedOutdoorFog.color);
+        scene.fog.density = savedOutdoorFog.density;
+        savedOutdoorFog = null;
+      }
+      dirLight.intensity = (currentMode === 'day') ? 1.1 : 0.7;
+    }
+
+    function exitFirstPerson() {
+      if (!isFirstPerson) return;
+      isFirstPerson = false;
+      if (insideBuildingKey) restoreOutdoorAmbience();
+      insideBuildingKey = null;
+      if (fpControls && fpControls.isLocked) fpControls.unlock();
+      controls.enabled = true;
+      labelsContainer.style.display = '';
+      document.getElementById('fp-hud').classList.add('hidden');
+      document.getElementById('fp-interact-prompt')?.classList.add('hidden');
+      document.getElementById('fp-room-info')?.classList.add('hidden');
+      document.getElementById('fp-pointer-hint')?.classList.add('hidden');
+      document.getElementById('fp-mode-btn')?.classList.remove('active');
+      document.getElementById('overview-mode-btn')?.classList.add('active');
+    }
+
+    function resumeFirstPersonLock() {
+      if (isFirstPerson && fpControls) fpControls.lock();
+    }
+
+    function tryInteract() {
+      if (!isFirstPerson) return;
+      if (insideBuildingKey) { exitBuildingInterior(); return; }
+      if (canInteractKey) openBuildingInterior(canInteractKey);
+    }
+
+    let savedOutdoorFog = null;
+
+    function openBuildingInterior(key) {
+      const room = agentInteriors[key];
+      const data = agentsData[key];
+      if (!room || !data) return;
+
+      const flash = document.getElementById('enter-flash');
+      flash.classList.remove('opacity-0');
+      setTimeout(() => {
+        const rig = fpControls.getObject();
+        outdoorReturnPos = { x: rig.position.x, z: rig.position.z };
+        rig.position.set(room.entryPoint.x, FP_EYE_HEIGHT, room.entryPoint.z);
+        rig.rotation.y = 0; // face the altar (every room is built facing -Z)
+        insideBuildingKey = key;
+
+        // Rooms sit far from town and are small/enclosed, so thin the fog and
+        // dim the directional "moonlight" to let the point lights read clearly.
+        savedOutdoorFog = { color: scene.fog.color.getHex(), density: scene.fog.density };
+        scene.fog.density = 0.004;
+        dirLight.intensity *= 0.3;
+
+        document.getElementById('fp-interact-prompt').textContent = `Nhấn [E] để rời khỏi ${data.name}`;
+        document.getElementById('fp-interact-prompt').classList.remove('hidden');
+
+        document.getElementById('fp-room-info-title').textContent = data.name;
+        document.getElementById('fp-room-info-task').textContent = data.task;
+        document.getElementById('fp-room-info-desc').textContent = data.desc;
+        document.getElementById('fp-room-info-progress').style.width = `${data.progress}%`;
+        document.getElementById('fp-room-info-progress-text').textContent = `${data.progress}%`;
+        document.getElementById('fp-room-info').classList.remove('hidden');
+        document.getElementById('fp-minimap').classList.add('hidden');
+
+        flash.classList.add('opacity-0');
+      }, 260);
+    }
+
+    function exitBuildingInterior() {
+      if (!insideBuildingKey) return;
+      const flash = document.getElementById('enter-flash');
+      flash.classList.remove('opacity-0');
+      setTimeout(() => {
+        const rig = fpControls.getObject();
+        if (outdoorReturnPos) {
+          rig.position.set(outdoorReturnPos.x, FP_EYE_HEIGHT, outdoorReturnPos.z);
+        }
+        insideBuildingKey = null;
+        restoreOutdoorAmbience();
+
+        document.getElementById('fp-room-info').classList.add('hidden');
+        document.getElementById('fp-minimap').classList.remove('hidden');
+        document.getElementById('fp-interact-prompt').classList.add('hidden');
+        flash.classList.add('opacity-0');
+      }, 260);
+    }
+
+    function resolveBuildingCollisions() {
+      const rig = fpControls.getObject();
+      [...buildingStations, ...obstaclesOnly].forEach(b => {
+        const dx = rig.position.x - b.x;
+        const dz = rig.position.z - b.z;
+        const dist = Math.hypot(dx, dz);
+        const minDist = b.collisionRadius + PLAYER_RADIUS;
+        if (dist < minDist) {
+          const safeDist = dist < 0.0001 ? 0.0001 : dist;
+          const push = minDist - safeDist;
+          rig.position.x += (dx / safeDist) * push;
+          rig.position.z += (dz / safeDist) * push;
+        }
+      });
+    }
+
+    function clampToIsland() {
+      const rig = fpControls.getObject();
+      rig.position.x = THREE.MathUtils.clamp(rig.position.x, -18, 18);
+      rig.position.z = THREE.MathUtils.clamp(rig.position.z, -16, 16);
+    }
+
+    function resolveRoomCollision() {
+      const room = agentInteriors[insideBuildingKey];
+      if (!room) return;
+      const rig = fpControls.getObject();
+      const dx = rig.position.x - room.altar.x;
+      const dz = rig.position.z - room.altar.z;
+      const dist = Math.hypot(dx, dz);
+      const minDist = 1.3 + PLAYER_RADIUS;
+      if (dist < minDist) {
+        const safeDist = dist < 0.0001 ? 0.0001 : dist;
+        const push = minDist - safeDist;
+        rig.position.x += (dx / safeDist) * push;
+        rig.position.z += (dz / safeDist) * push;
+      }
+    }
+
+    function clampToRoom() {
+      const room = agentInteriors[insideBuildingKey];
+      if (!room) return;
+      const rig = fpControls.getObject();
+      rig.position.x = THREE.MathUtils.clamp(rig.position.x, room.bounds.minX, room.bounds.maxX);
+      rig.position.z = THREE.MathUtils.clamp(rig.position.z, room.bounds.minZ, room.bounds.maxZ);
+    }
+
+    function updateInteractionPrompt() {
+      const rig = fpControls.getObject();
+      let nearest = null, nearestDist = Infinity;
+      buildingStations.forEach(b => {
+        const d = Math.hypot(rig.position.x - b.x, rig.position.z - b.z);
+        if (d < b.interactRadius && d < nearestDist) { nearestDist = d; nearest = b; }
+      });
+      canInteractKey = nearest ? nearest.key : null;
+      const promptEl = document.getElementById('fp-interact-prompt');
+      if (nearest) {
+        promptEl.textContent = `Nhấn [E] để bước vào ${nearest.name}`;
+        promptEl.classList.remove('hidden');
+      } else {
+        promptEl.classList.add('hidden');
+      }
+    }
+
+    // Top-down radar: shows the 7 agent stations relative to the player so
+    // navigating the island on foot doesn't feel like wandering blind.
+    const minimapCanvas = document.getElementById('fp-minimap-canvas');
+    const minimapCtx = minimapCanvas ? minimapCanvas.getContext('2d') : null;
+    const MINIMAP_RADIUS_WORLD = 22;
+    const fpWorldDir = new THREE.Vector3();
+
+    function updateMinimap() {
+      if (!minimapCtx || insideBuildingKey) return;
+      const ctx = minimapCtx;
+      const size = minimapCanvas.width;
+      const cx = size / 2, cy = size / 2;
+      const scale = (size / 2 - 8) / MINIMAP_RADIUS_WORLD;
+
+      ctx.clearRect(0, 0, size, size);
+      ctx.beginPath();
+      ctx.arc(cx, cy, size / 2 - 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(18,14,28,0.92)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(168,85,247,0.4)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const rig = fpControls.getObject();
+      fpCamera.getWorldDirection(fpWorldDir);
+      const yaw = Math.atan2(fpWorldDir.x, fpWorldDir.z);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, size / 2 - 2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.translate(cx, cy);
+      ctx.rotate(-yaw);
+
+      buildingStations.forEach(b => {
+        const dx = (b.x - rig.position.x) * scale;
+        const dz = (b.z - rig.position.z) * scale;
+        const data = agentsData[b.key];
+        const isNear = b.key === canInteractKey;
+        ctx.beginPath();
+        ctx.arc(dx, dz, isNear ? 5 : 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = data.color;
+        ctx.fill();
+        if (isNear) {
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#fde68a';
+          ctx.stroke();
+        }
+      });
+      ctx.restore();
+
+      // Player marker: fixed arrow pointing "up" (screen-forward), since the
+      // map itself rotates to match where the camera is looking.
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.beginPath();
+      ctx.moveTo(0, -7);
+      ctx.lineTo(5, 6);
+      ctx.lineTo(0, 3);
+      ctx.lineTo(-5, 6);
+      ctx.closePath();
+      ctx.fillStyle = '#fbbf24';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function updateFirstPersonMovement(delta) {
+      if (!fpControls || !fpControls.isLocked) return;
+
+      const damping = Math.max(0, 1 - 8 * delta);
+      fpVelocity.x *= damping;
+      fpVelocity.z *= damping;
+
+      const forwardInput = (fpMoveState.forward ? 1 : 0) - (fpMoveState.backward ? 1 : 0);
+      const rightInput = (fpMoveState.right ? 1 : 0) - (fpMoveState.left ? 1 : 0);
+      const isSprinting = fpMoveState.sprint && forwardInput > 0;
+      const topSpeed = isSprinting ? FP_SPEED * FP_SPRINT_MULT : FP_SPEED;
+
+      if (forwardInput !== 0) fpVelocity.z -= forwardInput * FP_ACCEL * delta;
+      if (rightInput !== 0) fpVelocity.x -= rightInput * FP_ACCEL * delta;
+
+      const horizSpeed = Math.hypot(fpVelocity.x, fpVelocity.z);
+      if (horizSpeed > topSpeed) {
+        fpVelocity.x = (fpVelocity.x / horizSpeed) * topSpeed;
+        fpVelocity.z = (fpVelocity.z / horizSpeed) * topSpeed;
+      }
+
+      fpControls.moveRight(-fpVelocity.x * delta);
+      fpControls.moveForward(-fpVelocity.z * delta);
+
+      // Resolve collisions twice: the first pass can push the player into a
+      // second obstacle near a corner, the second pass catches that case so
+      // the player never visibly clips through a wall for a frame.
+      if (insideBuildingKey) {
+        resolveRoomCollision(); clampToRoom();
+        resolveRoomCollision(); clampToRoom();
+      } else {
+        resolveBuildingCollisions(); clampToIsland();
+        resolveBuildingCollisions(); clampToIsland();
+      }
+
+      const rig = fpControls.getObject();
+      const moving = horizSpeed > 0.3;
+      if (moving) {
+        const bobRate = isSprinting ? 13 : 10;
+        const bobAmp = isSprinting ? 0.065 : 0.045;
+        fpBobTime += delta * bobRate;
+        rig.position.y = FP_EYE_HEIGHT + Math.sin(fpBobTime) * bobAmp;
+      } else {
+        rig.position.y += (FP_EYE_HEIGHT - rig.position.y) * 0.2;
+      }
+
+      // Subtle FOV punch while sprinting, eased back when not
+      const targetFov = isSprinting ? FP_FOV_SPRINT : FP_FOV_BASE;
+      fpCurrentFov += (targetFov - fpCurrentFov) * Math.min(1, delta * 6);
+      if (Math.abs(fpCamera.fov - fpCurrentFov) > 0.05) {
+        fpCamera.fov = fpCurrentFov;
+        fpCamera.updateProjectionMatrix();
+      }
+
+      if (!insideBuildingKey) updateInteractionPrompt();
+      updateMinimap();
+    }
+
+    // Overlay Label Generator
+    function createOverlayLabel(key, data) {
+      const label = document.createElement('div');
+      label.className = 'world-label';
+      label.id = `label-${key}`;
+      label.onclick = () => openAgentDrawer(key);
+
+      label.innerHTML = `
+        <div class="speech-bubble agent-bubble" id="bubble-${key}">
+          <span class="w-2 h-2 rounded-full" style="background:${data.color}; box-shadow: 0 0 8px ${data.color}"></span>
+          <span>${data.bubble}</span>
+        </div>
+        <div class="agent-tag agent-name-tag" id="tag-${key}" style="background: ${data.color}">
+          ${iconSvg(data.icon)} ${data.name}
+        </div>
+      `;
+
+      labelsContainer.appendChild(label);
+    }
+
+    // Sync HTML Labels with 3D Projected Screen Coordinates
+    function updateOverlayLabels() {
+      const tempV = new THREE.Vector3();
+
+      Object.keys(agents3D).forEach(key => {
+        const agent = agents3D[key];
+        const label = document.getElementById(`label-${key}`);
+        if (!label) return;
+
+        tempV.set(agent.position.x, agent.position.y + 3.1, agent.position.z);
+        tempV.project(camera);
+
+        const x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (tempV.y * -0.5 + 0.5) * window.innerHeight;
+
+        label.style.transform = `translate(-50%, -100%) translate(${x}px,${y}px)`;
+        label.style.opacity = tempV.z > 1 ? '0' : '1';
+      });
+    }
+
+    // Dynamic Environment Updater (Day/Night, Weather, Season)
+    function updateEnvironmentTheme() {
+      const palette = seasonPalettes[currentSeason];
+
+      // 1. Terrain & Foliage Colors
+      if (islandMesh) islandMesh.material.color.setHex(palette.ground);
+      if (baseMesh) baseMesh.material.color.setHex(palette.groundSub);
+      if (pathMesh) pathMesh.material.color.setHex(palette.path);
+
+      treeMeshes.forEach(leaf => {
+        leaf.material.color.setHex(palette.leaves);
+      });
+
+      // 2. Day / Night Lighting & Fog
+      if (currentMode === 'day') {
+        scene.background.setHex(palette.skyDay);
+        scene.fog.color.setHex(palette.fogDay);
+        ambientLight.color.setHex(0x7c3aed);
+        ambientLight.intensity = 0.85;
+        dirLight.color.setHex(0xfde047);
+        dirLight.intensity = 1.1;
+        moonGlowLight.color.setHex(0xf59e0b);
+      } else {
+        scene.background.setHex(palette.skyNight);
+        scene.fog.color.setHex(palette.fogNight);
+        ambientLight.color.setHex(0x3b0764);
+        ambientLight.intensity = 0.5;
+        dirLight.color.setHex(0xa855f7);
+        dirLight.intensity = 0.7;
+        moonGlowLight.color.setHex(0xa855f7);
+      }
+
+      // 3. Weather Particles Toggle
+      if (rainParticles) {
+        rainParticles.visible = (currentWeather === 'rain' && currentSeason !== 'winter');
+      }
+
+      if (snowParticles) {
+        snowParticles.visible = (currentSeason === 'winter');
+      }
+    }
+
+    // Main Animation Loop
+    function animate(time) {
+      requestAnimationFrame(animate);
+
+      time = time || 0;
+      const delta = Math.min((time - lastFrameTime) / 1000, 0.1);
+      lastFrameTime = time;
+      const elapsed = time * 0.001;
+
+      // 1. Water & Environmental Motion
+      if (enableEnvAnimation) {
+        if (waterMesh) {
+          waterMesh.rotation.z = elapsed * 0.2;
+          waterMesh.scale.set(1 + Math.sin(elapsed * 3) * 0.02, 1, 1 + Math.cos(elapsed * 3) * 0.02);
+        }
+
+        if (fountainFlameMesh) {
+          fountainFlameMesh.rotation.y = elapsed * 1.5;
+          fountainFlameMesh.rotation.x = Math.sin(elapsed * 2) * 0.3;
+        }
+
+        // Fountain Splashes
+        fountainParticles.forEach(p => {
+          p.position.x += p.userData.vx;
+          p.position.y += p.userData.vy;
+          p.position.z += p.userData.vz;
+          p.userData.vy -= 0.002;
+
+          if (p.position.y < 0.4) {
+            p.position.set(0, 0.7, 0);
+            p.userData.vy = 0.05 + Math.random() * 0.04;
+          }
+        });
+
+        // Swaying Trees
+        animatedTrees.forEach(t => {
+          t.rotation.z = Math.sin(elapsed * 2 + t.parent.userData.phase) * 0.08;
+          t.rotation.x = Math.cos(elapsed * 1.5 + t.parent.userData.phase) * 0.05;
+        });
+
+        // Floating Clouds
+        animatedClouds.forEach(c => {
+          c.position.x += c.userData.speed;
+          if (c.position.x > 30) c.position.x = -30;
+        });
+
+        // Ambient Sparkles
+        if (ambientParticles) {
+          ambientParticles.rotation.y = elapsed * 0.05;
+        }
+
+        // Spinning Interior Core Orbs
+        agentCoreMeshes.forEach(core => {
+          core.rotation.y += delta * 0.6;
+          core.rotation.x += delta * 0.35;
+        });
+
+        // Torchlight flicker & drifting motes, only computed for the room the
+        // player is currently standing in
+        if (insideBuildingKey) {
+          const room = agentInteriors[insideBuildingKey];
+          if (room && room.light) {
+            const n = Math.sin(elapsed * 9 + room.flickerSeed) * 0.5 + Math.sin(elapsed * 23 + room.flickerSeed) * 0.5;
+            room.light.intensity = room.lightBaseIntensity + n * 0.35;
+          }
+          if (room && room.motes) {
+            const mp = room.motePositions;
+            for (let i = 1; i < mp.length; i += 3) {
+              mp[i] += Math.sin(elapsed * 0.6 + i) * 0.0025 + 0.0015;
+              if (mp[i] > room.moteBoundsY) mp[i] = 0.2;
+            }
+            room.motes.geometry.attributes.position.needsUpdate = true;
+          }
+        }
+
+        // Rain Animation Loop
+        if (rainParticles && rainParticles.visible) {
+          const positions = rainParticles.geometry.attributes.position.array;
+          for (let i = 1; i < positions.length; i += 3) {
+            positions[i] -= 0.8;
+            if (positions[i] < 0) positions[i] = 30;
+          }
+          rainParticles.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // Snow Animation Loop
+        if (snowParticles && snowParticles.visible) {
+          const positions = snowParticles.geometry.attributes.position.array;
+          for (let i = 0; i < positions.length; i += 3) {
+            positions[i+1] -= 0.15;
+            positions[i] += Math.sin(elapsed + i) * 0.03;
+            if (positions[i+1] < 0) positions[i+1] = 30;
+          }
+          snowParticles.geometry.attributes.position.needsUpdate = true;
+        }
+      }
+
+      // 2. Character Hop Walking
+      if (enableAgentMovement) {
+        Object.keys(agents3D).forEach(key => {
+          const agent = agents3D[key];
+          agent.position.y = Math.abs(Math.sin(elapsed * 8)) * 0.25;
+        });
+      }
+
+      // 3. Floating Orbit Camera
+      if (enableCamFloat && controls && !isFirstPerson) {
+        camera.position.x = 38 + Math.sin(elapsed * 0.25) * 3;
+        camera.position.y = 38 + Math.cos(elapsed * 0.3) * 2;
+      }
+
+      if (isFirstPerson) {
+        updateFirstPersonMovement(delta);
+        renderer.render(scene, fpCamera);
+      } else {
+        controls.update();
+        renderer.render(scene, camera);
+        updateOverlayLabels();
+      }
+
+      if (window.MP) MP.onFrame(delta, elapsed);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      if (fpCamera) {
+        fpCamera.aspect = window.innerWidth / window.innerHeight;
+        fpCamera.updateProjectionMatrix();
+      }
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function onSceneClick(event) {
+      if (isFirstPerson) return;
+      if (event.target.tagName !== 'CANVAS') return;
+
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj.parent && !obj.userData.id && obj.parent !== scene) {
+          obj = obj.parent;
+        }
+        if (obj.userData && obj.userData.id) {
+          openAgentDrawer(obj.userData.id);
+        }
+      }
+    }
+
+    // ENVIRONMENT CONTROL HANDLERS
+    function setTimeOfDay(mode) {
+      currentMode = mode;
+      document.getElementById('time-day').classList.toggle('active', mode === 'day');
+      document.getElementById('time-night').classList.toggle('active', mode === 'night');
+      updateEnvironmentTheme();
+    }
+
+    function setWeather(weather) {
+      currentWeather = weather;
+      document.getElementById('weather-clear').classList.toggle('active', weather === 'clear');
+      document.getElementById('weather-rain').classList.toggle('active', weather === 'rain');
+      updateEnvironmentTheme();
+    }
+
+    function setSeason(season) {
+      currentSeason = season;
+      ['spring', 'summer', 'autumn', 'winter'].forEach(s => {
+        document.getElementById(`season-${s}`).classList.toggle('active', s === season);
+      });
+      updateEnvironmentTheme();
+    }
+
+    // UI Interactive Actions
+    function toggleAgentMovement() {
+      enableAgentMovement = !enableAgentMovement;
+      document.getElementById('btn-agents-move').classList.toggle('active', enableAgentMovement);
+    }
+
+    function toggleEnvAnimation() {
+      enableEnvAnimation = !enableEnvAnimation;
+      document.getElementById('btn-env-anim').classList.toggle('active', enableEnvAnimation);
+    }
+
+    function toggleCamFloat() {
+      enableCamFloat = !enableCamFloat;
+      document.getElementById('btn-cam-float').classList.toggle('active', enableCamFloat);
+    }
+
+    function toggleNames() {
+      showNames = !showNames;
+      document.querySelectorAll('.agent-name-tag').forEach(el => {
+        el.style.display = showNames ? 'flex' : 'none';
+      });
+      document.getElementById('btn-names').classList.toggle('active', showNames);
+    }
+
+    function toggleBubbles() {
+      showBubbles = !showBubbles;
+      document.querySelectorAll('.agent-bubble').forEach(el => {
+        el.style.display = showBubbles ? 'flex' : 'none';
+      });
+      document.getElementById('btn-bubbles').classList.toggle('active', showBubbles);
+    }
+
+    function resetCameraView() {
+      if (isFirstPerson) exitFirstPerson();
+      gsap.to(camera.position, { x: 38, y: 38, z: 38, duration: 1.2, ease: "power2.out" });
+      gsap.to(controls.target, { x: 0, y: 0, z: 0, duration: 1.2, ease: "power2.out" });
+    }
+
+    function focusOnAgent(key) {
+      const data = agentsData[key];
+      if (!data) return;
+      if (isFirstPerson) exitFirstPerson();
+
+      openAgentDrawer(key);
+
+      const agentPos = agents3D[key].position;
+      gsap.to(camera.position, {
+        x: agentPos.x + 12,
+        y: 12,
+        z: agentPos.z + 12,
+        duration: 1.4,
+        ease: "power2.out"
+      });
+
+      gsap.to(controls.target, {
+        x: agentPos.x,
+        y: 1,
+        z: agentPos.z,
+        duration: 1.4,
+        ease: "power2.out"
+      });
+    }
+
+    function openAgentDrawer(key) {
+      const data = agentsData[key] || agentsData['research'];
+      document.getElementById('drawer-title').innerText = data.name;
+      document.getElementById('drawer-task-name').innerText = data.task;
+      document.getElementById('drawer-task-desc').innerText = data.desc;
+      document.getElementById('drawer-progress').style.width = `${data.progress}%`;
+      document.getElementById('drawer-progress-text').innerText = `${data.progress}%`;
+
+      const avatar = document.getElementById('drawer-avatar');
+      avatar.style.backgroundColor = data.color;
+      avatar.innerHTML = iconSvg(data.icon);
+
+      document.getElementById('agent-drawer').classList.remove('translate-x-full');
+    }
+
+    function closeAgentDrawer() {
+      document.getElementById('agent-drawer').classList.add('translate-x-full');
+    }
+
+    function openActivityLog() {
+      if (fpControls && fpControls.isLocked) fpControls.unlock();
+      document.getElementById('log-modal').classList.remove('hidden');
+    }
+
+    function closeActivityLog() {
+      document.getElementById('log-modal').classList.add('hidden');
+    }
+
+    function openOverviewModal() {
+      if (fpControls && fpControls.isLocked) fpControls.unlock();
+      document.getElementById('overview-modal').classList.remove('hidden');
+    }
+
+    function closeOverviewModal() {
+      document.getElementById('overview-modal').classList.add('hidden');
+    }
+
+    // Dark Fantasy Thought Bubble Update Simulation
+    const gothicThoughts = [
+      "Đang soi cầu 30 video TikTok...",
+      "Khắc chú kịch bản viral mới...",
+      "Đã lấy hook kịch sàn ma mị!",
+      "Nhấp trà bóng đêm phục hồi mana...",
+      "Ấn ấn SOL-025 đã đạt QC!",
+      "Hòa mạng số liệu TikTok Ads...",
+      "Hồi đáp 20 bình luận thần tốc!"
+    ];
+
+    setInterval(() => {
+      const keys = Object.keys(agentsData);
+      const randomKey = keys[Math.floor(Math.random() * keys.length)];
+      const randomText = gothicThoughts[Math.floor(Math.random() * gothicThoughts.length)];
+      const bubbleEl = document.querySelector(`#bubble-${randomKey} span:nth-child(2)`);
+      if (bubbleEl) {
+        bubbleEl.innerText = randomText;
+      }
+    }, 3000);
+  </script>
+
+  <script>
+    // ===================== MULTIPLAYER + MA SÓI (WEREWOLF) MODULE =====================
+    // Lets multiple people open this same page at once, see each other walking
+    // around the town in real time, chat, and play a round of "Ma Sói"
+    // (Werewolf/Mafia) together. Built on the Artifact runtime's `room` (live
+    // presence/positions), `db` (shared, persistent game state) and `user`
+    // (stable per-account id) capabilities.
+    (function () {
+      const MP = {
+        ready: false,
+        db: null, room: null, user: null,
+        myId: null, myName: 'Lữ khách', myColor: '#a855f7',
+        avatars: {},
+        lastSent: { x: null, z: null, ry: null },
+        heartbeatTimer: null,
+        hostLeaseTimer: null,
+        isHost: false,
+        pendingName: null,
+        state: { phase: 'lobby', round: 0, hostId: null, deaths: [], log: [], winner: null },
+        players: {},
+        night: null, day: null
+      };
+      window.MP = MP;
+
+      const ROLE_INFO = {
+        wolf: { label: 'Sói', icon: '🐺', color: '#ef4444', desc: 'Mỗi đêm, bạn cùng bầy Sói chọn một người để cắn. Ban ngày hãy giả vờ là dân làng lương thiện.' },
+        seer: { label: 'Tiên Tri', icon: '🔮', color: '#38bdf8', desc: 'Mỗi đêm bạn được soi một người để biết họ có phải là Sói hay không.' },
+        guard: { label: 'Bảo Vệ', icon: '🛡️', color: '#22c55e', desc: 'Mỗi đêm bạn chọn một người để bảo vệ khỏi nanh vuốt của Sói.' },
+        villager: { label: 'Dân Làng', icon: '🌾', color: '#f59e0b', desc: 'Bạn không có năng lực đặc biệt. Hãy dùng lý lẽ để tìm ra Sói vào ban ngày.' }
+      };
+
+      // ---------------- helpers ----------------
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+      function uuidFallback() {
+        try {
+          let id = localStorage.getItem('solomi_guest_id');
+          if (!id) { id = 'g_' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('solomi_guest_id', id); }
+          return id;
+        } catch (e) { return 'g_' + Math.random().toString(36).slice(2); }
+      }
+      function colorFromId(id) {
+        const palette = ['#a855f7', '#f59e0b', '#22d3ee', '#10b981', '#f43f5e', '#38bdf8', '#eab308', '#fb923c'];
+        let h = 0;
+        for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+        return palette[h % palette.length];
+      }
+      function playerName(id) { return (MP.players[id] && MP.players[id].name) || 'Ẩn danh'; }
+      function aliveIds() { return Object.keys(MP.players).filter(id => MP.players[id] && MP.players[id].alive); }
+      function showMpBanner(msg) {
+        const el = document.createElement('div');
+        el.className = 'glass-panel fixed top-20 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-xl text-xs font-bold text-purple-100 z-[75] max-w-[90vw] text-center';
+        el.textContent = msg;
+        document.body.appendChild(el);
+        setTimeout(() => { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }, 4200);
+      }
+
+      // ---------------- capability bootstrap ----------------
+      async function initCapabilities() {
+        try {
+          if (!window.claude || !window.claude.use) { console.warn('MP: artifact runtime not available in this view.'); return; }
+          const [db, room, user] = await Promise.all([
+            window.claude.use('db').catch(() => null),
+            window.claude.use('room').catch(() => null),
+            window.claude.use('user').catch(() => null)
+          ]);
+          MP.db = db; MP.room = room; MP.user = user;
+
+          let id = null;
+          if (user) { try { id = await user.id(); } catch (e) {} }
+          MP.myId = id || uuidFallback();
+          MP.myColor = colorFromId(MP.myId);
+          MP.ready = true;
+
+          if (!db || !room) {
+            showMpBanner('Chế độ nhiều người chơi chưa khả dụng ở phiên này — bạn vẫn khám phá thị trấn một mình được nhé.');
+          }
+
+          subscribeGameState();
+          if (MP.pendingName) startPresenceLoop(MP.pendingName);
+        } catch (e) {
+          console.warn('MP init failed', e);
+        }
+      }
+      window.addEventListener('load', initCapabilities);
+
+      // ---------------- presence / avatars ----------------
+      function startPresenceLoop(name) {
+        MP.myName = (name || 'Lữ khách').slice(0, 24);
+        if (!MP.ready) { MP.pendingName = MP.myName; return; }
+        if (!MP.room) return;
+        sendPresence(true);
+        if (MP.heartbeatTimer) clearInterval(MP.heartbeatTimer);
+        MP.heartbeatTimer = setInterval(() => sendPresence(false), 180);
+        MP.room.onPeers(handlePeersChange);
+      }
+      MP.startPresenceLoop = startPresenceLoop;
+
+      function sendPresence(force) {
+        if (!MP.room || typeof fpControls === 'undefined' || !fpControls) return;
+        const p = fpControls.getObject().position;
+        const ry = (typeof fpCamera !== 'undefined' && fpCamera) ? fpCamera.rotation.y : 0;
+        const x = Math.round(p.x * 20) / 20, z = Math.round(p.z * 20) / 20;
+        const rr = Math.round(ry * 50) / 50;
+        if (!force && MP.lastSent.x === x && MP.lastSent.z === z && MP.lastSent.ry === rr) return;
+        MP.lastSent = { x, z, ry: rr };
+        MP.room.presence({
+          name: MP.myName, color: MP.myColor, x, z, ry: rr,
+          inside: (typeof insideBuildingKey !== 'undefined') ? !!insideBuildingKey : false
+        }).catch(() => {});
+      }
+
+      let chatClearTimer = null;
+      function sendChat(text) {
+        text = (text || '').trim().slice(0, 80);
+        if (!text || !MP.room) return;
+        MP.room.presence({ chat: text, chatAt: Date.now() }).catch(() => {});
+        if (chatClearTimer) clearTimeout(chatClearTimer);
+        chatClearTimer = setTimeout(() => { if (MP.room) MP.room.presence({ chat: null }).catch(() => {}); }, 6000);
+      }
+      MP.sendChat = sendChat;
+
+      function peerKey(p) { return p.by || p.peer; }
+
+      function handlePeersChange(change) {
+        change.left.forEach(p => removeAvatar(peerKey(p)));
+        change.joined.concat(change.updated).forEach(p => { if (!p.isMe) upsertAvatar(p); });
+        const countEl = document.getElementById('mp-online-count');
+        if (countEl) countEl.textContent = String(change.peers.filter(p => p.kind === 'viewer').length);
+      }
+
+      function upsertAvatar(peer) {
+        const key = peerKey(peer);
+        const pr = peer.presence || {};
+        if (typeof pr.x !== 'number' || typeof pr.z !== 'number') return;
+        let av = MP.avatars[key];
+        if (!av) {
+          av = MP.avatars[key] = buildPlayerAvatar(pr.color || '#a855f7');
+          scene.add(av.group);
+          av.labelEl = buildPlayerLabel();
+        }
+        av.target.x = pr.x; av.target.z = pr.z; av.target.ry = pr.ry || 0;
+        av.name = pr.name || 'Lữ khách';
+        av.chatText = (pr.chat && pr.chatAt && (Date.now() - pr.chatAt) < 6000) ? pr.chat : null;
+        av.hidden = !!pr.inside;
+      }
+
+      function removeAvatar(key) {
+        const av = MP.avatars[key];
+        if (!av) return;
+        scene.remove(av.group);
+        if (av.labelEl && av.labelEl.parentNode) av.labelEl.parentNode.removeChild(av.labelEl);
+        delete MP.avatars[key];
+      }
+
+      function buildPlayerAvatar(colorHex) {
+        const group = new THREE.Group();
+        const colorInt = parseInt('0x' + String(colorHex).replace('#', ''));
+        const mat = new THREE.MeshLambertMaterial({ color: isNaN(colorInt) ? 0xa855f7 : colorInt });
+        const cloakMat = new THREE.MeshLambertMaterial({ color: 0x1b1626 });
+
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 14, 14), mat);
+        head.position.y = 1.55; head.castShadow = true; group.add(head);
+
+        const body = new THREE.Mesh(new THREE.ConeGeometry(0.58, 1.5, 12), cloakMat);
+        body.position.y = 0.65; body.castShadow = true; group.add(body);
+
+        const trim = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.05, 8, 16), mat);
+        trim.position.y = 1.12; trim.rotation.x = Math.PI / 2; group.add(trim);
+
+        const eyeGeo = new THREE.SphereGeometry(0.06, 6, 6);
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const e1 = new THREE.Mesh(eyeGeo, eyeMat); e1.position.set(0.16, 1.6, 0.44); group.add(e1);
+        const e2 = new THREE.Mesh(eyeGeo, eyeMat); e2.position.set(-0.16, 1.6, 0.44); group.add(e2);
+
+        return { group, target: { x: 0, z: 0, ry: 0 }, name: '', chatText: null, hidden: false, labelEl: null };
+      }
+
+      const mpLabelsContainer = (() => {
+        const el = document.createElement('div');
+        el.id = 'mp-labels-container';
+        el.className = 'absolute inset-0 pointer-events-none overflow-hidden';
+        el.style.zIndex = '42';
+        document.body.appendChild(el);
+        return el;
+      })();
+
+      function buildPlayerLabel() {
+        const el = document.createElement('div');
+        el.className = 'mp-player-label';
+        el.innerHTML = '<div class="mp-chat-bubble" style="display:none"></div><div class="mp-name-tag"></div>';
+        mpLabelsContainer.appendChild(el);
+        return el;
+      }
+
+      const mpTempV = new THREE.Vector3();
+      function updateAvatarsAndLabels() {
+        const cam = (typeof isFirstPerson !== 'undefined' && isFirstPerson && typeof fpCamera !== 'undefined') ? fpCamera : (typeof camera !== 'undefined' ? camera : null);
+        if (!cam) return;
+        Object.keys(MP.avatars).forEach(key => {
+          const av = MP.avatars[key];
+          av.group.position.x += (av.target.x - av.group.position.x) * 0.25;
+          av.group.position.z += (av.target.z - av.group.position.z) * 0.25;
+          let dr = av.target.ry - av.group.rotation.y;
+          while (dr > Math.PI) dr -= Math.PI * 2;
+          while (dr < -Math.PI) dr += Math.PI * 2;
+          av.group.rotation.y += dr * 0.25;
+          av.group.visible = !av.hidden;
+
+          if (!av.labelEl) return;
+          if (av.hidden) { av.labelEl.style.opacity = '0'; return; }
+          mpTempV.set(av.group.position.x, av.group.position.y + 2.4, av.group.position.z);
+          mpTempV.project(cam);
+          const x = (mpTempV.x * 0.5 + 0.5) * window.innerWidth;
+          const y = (mpTempV.y * -0.5 + 0.5) * window.innerHeight;
+          av.labelEl.style.transform = `translate(-50%,-100%) translate(${x}px,${y}px)`;
+          av.labelEl.style.opacity = mpTempV.z > 1 ? '0' : '1';
+          const nameTag = av.labelEl.querySelector('.mp-name-tag');
+          if (nameTag) nameTag.textContent = av.name;
+          const bubble = av.labelEl.querySelector('.mp-chat-bubble');
+          if (bubble) {
+            if (av.chatText) { bubble.style.display = 'block'; bubble.textContent = av.chatText; }
+            else bubble.style.display = 'none';
+          }
+        });
+      }
+
+      MP.onFrame = function () { updateAvatarsAndLabels(); };
+
+      // ---------------- Ma Sói (Werewolf) game ----------------
+      function stateDoc() { return MP.db.doc('meta/state'); }
+      function playersCol() { return MP.db.collection('players'); }
+      function nightDoc(round) { return MP.db.doc('meta/night_' + round); }
+      function dayDoc(round) { return MP.db.doc('meta/day_' + round); }
+      function hostLeaseDoc() { return MP.db.doc('meta/host_lease'); }
+
+      function subscribeGameState() {
+        if (!MP.db) return;
+        stateDoc().onSnapshot(snap => {
+          MP.state = snap.exists ? snap.data() : { phase: 'lobby', round: 0, hostId: null, deaths: [], log: [], winner: null };
+          renderWolfPanel();
+        }, e => console.warn('MP state sub error', e));
+
+        playersCol().onSnapshot(qs => {
+          const p = {};
+          qs.docs.forEach(d => { p[d.id] = d.data(); });
+          MP.players = p;
+          renderWolfPanel();
+        }, e => console.warn('MP players sub error', e));
+
+        maintainHostLease();
+      }
+
+      let nightUnsub = null, dayUnsub = null, nightRoundSubscribed = -1, dayRoundSubscribed = -1;
+      function ensureRoundSubs() {
+        const round = MP.state.round || 0;
+        if (MP.state.phase === 'night' && nightRoundSubscribed !== round) {
+          if (nightUnsub) nightUnsub();
+          nightRoundSubscribed = round;
+          nightUnsub = nightDoc(round).onSnapshot(snap => { MP.night = snap.exists ? snap.data() : {}; renderWolfPanel(); });
+        }
+        if (MP.state.phase === 'voting' && dayRoundSubscribed !== round) {
+          if (dayUnsub) dayUnsub();
+          dayRoundSubscribed = round;
+          dayUnsub = dayDoc(round).onSnapshot(snap => { MP.day = snap.exists ? snap.data() : {}; renderWolfPanel(); });
+        }
+      }
+
+      function maintainHostLease() {
+        if (!MP.db) return;
+        async function tryLease() {
+          try {
+            const res = await hostLeaseDoc().acquire({ holder: MP.myId, ttlMs: 20000 });
+            MP.isHost = !!res.acquired;
+            if (res.acquired && MP.state.hostId !== MP.myId) {
+              await stateDoc().set(Object.assign({}, MP.state, { hostId: MP.myId }));
+            }
+          } catch (e) { /* ignore transient errors */ }
+          renderWolfPanel();
+        }
+        tryLease();
+        MP.hostLeaseTimer = setInterval(tryLease, 9000);
+      }
+
+      function computeRoleList(n) {
+        let wolves = Math.max(1, Math.floor(n / 4));
+        let seer = n >= 5 ? 1 : 0;
+        let guard = n >= 7 ? 1 : 0;
+        let villagers = Math.max(0, n - wolves - seer - guard);
+        const list = [];
+        for (let i = 0; i < wolves; i++) list.push('wolf');
+        for (let i = 0; i < seer; i++) list.push('seer');
+        for (let i = 0; i < guard; i++) list.push('guard');
+        for (let i = 0; i < villagers; i++) list.push('villager');
+        return list;
+      }
+      function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; }
+        return a;
+      }
+      function tallyVotes(votesObj, eligibleVoterIds) {
+        const counts = {};
+        Object.keys(votesObj || {}).forEach(voter => {
+          if (eligibleVoterIds.indexOf(voter) === -1) return;
+          const target = votesObj[voter];
+          counts[target] = (counts[target] || 0) + 1;
+        });
+        let top = null, topCount = 0, tie = false;
+        Object.keys(counts).forEach(t => {
+          if (counts[t] > topCount) { top = t; topCount = counts[t]; tie = false; }
+          else if (counts[t] === topCount) { tie = true; }
+        });
+        return { top, topCount, tie, counts };
+      }
+      function checkWinner() {
+        const alive = aliveIds();
+        const wolves = alive.filter(id => MP.players[id].role === 'wolf').length;
+        const others = alive.length - wolves;
+        if (wolves === 0) return 'villagers';
+        if (wolves >= others) return 'wolves';
+        return null;
+      }
+
+      async function joinGame() {
+        if (!MP.db) return;
+        await playersCol().doc(MP.myId).set({ name: MP.myName, color: MP.myColor, alive: true, role: null, joinedAt: Date.now() });
+      }
+      MP.joinGame = joinGame;
+
+      async function leaveGame() {
+        if (!MP.db) return;
+        try { await playersCol().doc(MP.myId).delete(); } catch (e) {}
+      }
+      MP.leaveGame = leaveGame;
+
+      async function startGame() {
+        if (!MP.db || !MP.isHost) return;
+        const ids = Object.keys(MP.players);
+        if (ids.length < 4) return;
+        const roles = shuffle(computeRoleList(ids.length));
+        const shuffledIds = shuffle(ids);
+        for (let i = 0; i < shuffledIds.length; i++) {
+          await playersCol().doc(shuffledIds[i]).update({ role: roles[i], alive: true });
+        }
+        await nightDoc(1).set({ wolfVotes: {}, guardTarget: null, seerTarget: null });
+        await stateDoc().set({ phase: 'night', round: 1, hostId: MP.myId, deaths: [], log: ['🌙 Đêm thứ 1 bắt đầu. Cả làng nhắm mắt lại...'], winner: null, startedAt: Date.now() });
+      }
+      MP.startGame = startGame;
+
+      async function wolfVote(targetId) {
+        if (!MP.db) return;
+        await nightDoc(MP.state.round).update({ wolfVotes: { [MP.myId]: targetId } });
+      }
+      MP.wolfVote = wolfVote;
+
+      async function guardProtect(targetId) {
+        if (!MP.db) return;
+        await nightDoc(MP.state.round).update({ guardTarget: targetId });
+      }
+      MP.guardProtect = guardProtect;
+
+      function seerCheck(targetId) {
+        const role = MP.players[targetId] && MP.players[targetId].role;
+        const isWolf = role === 'wolf';
+        showMpBanner((playerName(targetId)) + (isWolf ? ' LÀ SÓI! 🐺' : ' không phải là Sói.'));
+        if (MP.db) nightDoc(MP.state.round).update({ seerTarget: targetId }).catch(() => {});
+      }
+      MP.seerCheck = seerCheck;
+
+      async function endNight() {
+        if (!MP.db || !MP.isHost) return;
+        const round = MP.state.round;
+        const night = (await nightDoc(round).get()).data() || {};
+        const wolfIds = aliveIds().filter(id => MP.players[id].role === 'wolf');
+        const { top: victim } = tallyVotes(night.wolfVotes, wolfIds);
+        const log = (MP.state.log || []).slice(-40);
+        let deaths = [];
+        if (victim && victim !== night.guardTarget && MP.players[victim] && MP.players[victim].alive) {
+          await playersCol().doc(victim).update({ alive: false });
+          deaths.push(victim);
+          log.push('☠️ ' + playerName(victim) + ' đã bị Sói cắn chết trong đêm.');
+          MP.players = Object.assign({}, MP.players, { [victim]: Object.assign({}, MP.players[victim], { alive: false }) });
+        } else if (victim && victim === night.guardTarget) {
+          log.push('🛡️ Bảo Vệ đã cứu được một người khỏi Sói đêm qua!');
+        } else {
+          log.push('🌙 Đêm qua yên bình, không ai bị Sói cắn.');
+        }
+        const winner = checkWinner();
+        if (winner) {
+          log.push(winner === 'wolves' ? '🐺 PHE SÓI ĐÃ THẮNG!' : '🌾 PHE DÂN LÀNG ĐÃ THẮNG!');
+          await stateDoc().set(Object.assign({}, MP.state, { phase: 'ended', deaths, log, winner }));
+        } else {
+          await stateDoc().set(Object.assign({}, MP.state, { phase: 'day', deaths, log, winner: null }));
+        }
+      }
+      MP.endNight = endNight;
+
+      async function startVoting() {
+        if (!MP.db || !MP.isHost) return;
+        await dayDoc(MP.state.round).set({ votes: {} });
+        const log = (MP.state.log || []).slice(-40);
+        log.push('🗳️ Dân làng bắt đầu bỏ phiếu treo cổ nghi phạm.');
+        await stateDoc().set(Object.assign({}, MP.state, { phase: 'voting', log }));
+      }
+      MP.startVoting = startVoting;
+
+      async function dayVote(targetId) {
+        if (!MP.db) return;
+        await dayDoc(MP.state.round).update({ votes: { [MP.myId]: targetId } });
+      }
+      MP.dayVote = dayVote;
+
+      async function endVoting() {
+        if (!MP.db || !MP.isHost) return;
+        const round = MP.state.round;
+        const day = (await dayDoc(round).get()).data() || {};
+        const { top, tie } = tallyVotes(day.votes, aliveIds());
+        const log = (MP.state.log || []).slice(-40);
+        let deaths = [];
+        if (top && !tie) {
+          await playersCol().doc(top).update({ alive: false });
+          deaths.push(top);
+          log.push('⚖️ ' + playerName(top) + ' đã bị dân làng treo cổ. Vai trò thật: ' + ((ROLE_INFO[MP.players[top].role] || {}).label || '???'));
+          MP.players = Object.assign({}, MP.players, { [top]: Object.assign({}, MP.players[top], { alive: false }) });
+        } else {
+          log.push('🤝 Không đủ số phiếu để treo cổ ai, làng tạm tha cho mọi người.');
+        }
+        const winner = checkWinner();
+        if (winner) {
+          log.push(winner === 'wolves' ? '🐺 PHE SÓI ĐÃ THẮNG!' : '🌾 PHE DÂN LÀNG ĐÃ THẮNG!');
+          await stateDoc().set(Object.assign({}, MP.state, { phase: 'ended', deaths, log, winner }));
+        } else {
+          const nextRound = round + 1;
+          await nightDoc(nextRound).set({ wolfVotes: {}, guardTarget: null, seerTarget: null });
+          log.push('🌙 Đêm thứ ' + nextRound + ' bắt đầu...');
+          await stateDoc().set(Object.assign({}, MP.state, { phase: 'night', round: nextRound, deaths, log, winner: null }));
+        }
+      }
+      MP.endVoting = endVoting;
+
+      async function resetGame() {
+        if (!MP.db || !MP.isHost) return;
+        const ids = Object.keys(MP.players);
+        for (const id of ids) { await playersCol().doc(id).update({ alive: true, role: null }); }
+        await stateDoc().set({ phase: 'lobby', round: 0, hostId: MP.myId, deaths: [], log: [], winner: null });
+      }
+      MP.resetGame = resetGame;
+
+      // ---------------- panel rendering ----------------
+      function renderWolfPanel() {
+        const body = document.getElementById('wolf-panel-body');
+        if (!body) return;
+        ensureRoundSubs();
+
+        if (!MP.db || !MP.room) {
+          body.innerHTML = '<p class="text-purple-300/80 text-xs leading-relaxed">Chế độ nhiều người chơi chưa sẵn sàng trong phiên này. Bạn vẫn có thể khám phá thị trấn một mình.</p>';
+          return;
+        }
+
+        const me = MP.players[MP.myId];
+        const myRole = me && me.role ? ROLE_INFO[me.role] : null;
+        let html = '';
+
+        if (myRole) {
+          const teammates = Object.keys(MP.players).filter(id => MP.players[id].role === 'wolf' && id !== MP.myId).map(id => playerName(id)).join(', ');
+          html += `
+            <div class="rounded-2xl p-3 mb-4 border" style="background:${myRole.color}22;border-color:${myRole.color}66">
+              <div class="text-[10px] uppercase tracking-widest font-extrabold text-purple-300/80 mb-1">Vai trò của bạn</div>
+              <div class="text-lg font-extrabold flex items-center gap-2" style="color:${myRole.color}">${myRole.icon} ${esc(myRole.label)}</div>
+              <p class="text-[11px] text-purple-200/80 mt-1 leading-relaxed">${esc(myRole.desc)}</p>
+              ${me.role === 'wolf' ? `<div class="mt-2 text-[11px] text-rose-300">Đồng bọn Sói: ${esc(teammates || 'không còn ai')}</div>` : ''}
+              ${!me.alive ? `<div class="mt-2 text-[11px] font-bold text-red-400">Bạn đã bị loại — vẫn có thể xem diễn biến.</div>` : ''}
+            </div>`;
+        }
+
+        const allPlayers = Object.keys(MP.players).map(id => Object.assign({ id: id }, MP.players[id]));
+
+        if (MP.state.phase === 'lobby') {
+          const joined = !!me;
+          html += `
+            <div class="mb-3 text-xs text-purple-300/80 leading-relaxed">Trò chơi ma mị cho 4+ người: Sói ăn thịt dân làng mỗi đêm, dân làng bỏ phiếu treo cổ nghi phạm mỗi ngày. Vai trò chỉ hiện với chính bạn — chơi đẹp, đừng tự mở Console xem trước bài người khác nhé 😉</div>
+            <div class="flex gap-2 mb-3">
+              ${!joined
+                ? `<button onclick="MP.joinGame()" class="flex-1 glass-button active px-3 py-2 rounded-xl text-xs font-bold">Tham gia ván chơi</button>`
+                : `<button onclick="MP.leaveGame()" class="flex-1 glass-button px-3 py-2 rounded-xl text-xs font-bold">Rời ván chơi</button>`}
+            </div>
+            <div class="text-[10px] uppercase tracking-widest font-extrabold text-purple-300/70 mb-2">Người chơi (${allPlayers.length})</div>
+            <div class="space-y-1.5 mb-4">
+              ${allPlayers.map(p => `<div class="flex items-center justify-between bg-purple-950/40 rounded-xl px-3 py-1.5 border border-purple-500/20"><span class="text-xs font-bold text-purple-100">${esc(p.name)}</span>${p.id === MP.state.hostId ? '<span class="text-[9px] text-amber-400 font-extrabold">CHỦ TRÌ</span>' : ''}</div>`).join('') || '<div class="text-xs text-purple-400/60">Chưa có ai tham gia.</div>'}
+            </div>
+            ${MP.isHost ? `<button onclick="MP.startGame()" ${allPlayers.length < 4 ? 'disabled' : ''} class="w-full glass-button ${allPlayers.length < 4 ? 'opacity-40' : 'active'} px-3 py-2 rounded-xl text-xs font-bold">${allPlayers.length < 4 ? 'Cần tối thiểu 4 người' : 'Bắt đầu ván chơi'}</button>` : ''}
+          `;
+        } else if (MP.state.phase === 'ended') {
+          html += `
+            <div class="text-center mb-4">
+              <div class="text-2xl font-black gothic-font mb-1" style="color:${MP.state.winner === 'wolves' ? '#ef4444' : '#f59e0b'}">${MP.state.winner === 'wolves' ? '🐺 PHE SÓI THẮNG' : '🌾 PHE DÂN LÀNG THẮNG'}</div>
+            </div>
+            <div class="text-[10px] uppercase tracking-widest font-extrabold text-purple-300/70 mb-2">Vai trò mọi người</div>
+            <div class="space-y-1.5 mb-4">
+              ${allPlayers.map(p => `<div class="flex items-center justify-between bg-purple-950/40 rounded-xl px-3 py-1.5 border border-purple-500/20">
+                <span class="text-xs font-bold ${p.alive ? 'text-purple-100' : 'text-purple-500 line-through'}">${esc(p.name)}</span>
+                <span class="text-xs font-bold" style="color:${(ROLE_INFO[p.role] || {}).color || '#aaa'}">${(ROLE_INFO[p.role] || {}).icon || ''} ${esc((ROLE_INFO[p.role] || {}).label || '?')}</span>
+              </div>`).join('')}
+            </div>
+            ${MP.isHost ? `<button onclick="MP.resetGame()" class="w-full glass-button active px-3 py-2 rounded-xl text-xs font-bold">Chơi lại</button>` : '<div class="text-xs text-purple-400/60">Đợi chủ trì bắt đầu ván mới...</div>'}
+          `;
+        } else {
+          const phaseLabel = MP.state.phase === 'night' ? `🌙 Đêm ${MP.state.round}` : MP.state.phase === 'day' ? `☀️ Ngày ${MP.state.round}` : `🗳️ Bỏ phiếu — Ngày ${MP.state.round}`;
+          html += `<div class="text-sm font-extrabold text-amber-300 mb-3">${phaseLabel}</div>`;
+
+          if (MP.state.phase === 'night' && me && me.alive) {
+            const alive = allPlayers.filter(p => p.alive);
+            if (me.role === 'wolf') {
+              const night = MP.night || {};
+              const myPick = (night.wolfVotes || {})[MP.myId];
+              html += `<div class="text-xs text-purple-300/80 mb-2">Chọn con mồi cùng bầy:</div><div class="space-y-1.5 mb-3">`;
+              alive.filter(p => p.role !== 'wolf').forEach(p => {
+                html += `<button onclick="MP.wolfVote('${p.id}')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-bold border ${myPick === p.id ? 'bg-red-900/50 border-red-400/60 text-red-200' : 'bg-purple-950/40 border-purple-500/20 text-purple-100 hover:border-red-400/40'}">${esc(p.name)}</button>`;
+              });
+              html += `</div>`;
+            } else if (me.role === 'seer') {
+              html += `<div class="text-xs text-purple-300/80 mb-2">Chọn một người để soi:</div><div class="space-y-1.5 mb-3">`;
+              alive.filter(p => p.id !== MP.myId).forEach(p => {
+                html += `<button onclick="MP.seerCheck('${p.id}')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-950/40 border border-purple-500/20 text-purple-100 hover:border-cyan-400/40">${esc(p.name)}</button>`;
+              });
+              html += `</div>`;
+            } else if (me.role === 'guard') {
+              const myPick = MP.night && MP.night.guardTarget;
+              html += `<div class="text-xs text-purple-300/80 mb-2">Chọn một người để bảo vệ:</div><div class="space-y-1.5 mb-3">`;
+              alive.forEach(p => {
+                html += `<button onclick="MP.guardProtect('${p.id}')" class="w-full text-left px-3 py-1.5 rounded-xl text-xs font-bold border ${myPick === p.id ? 'bg-emerald-900/50 border-emerald-400/60 text-emerald-200' : 'bg-purple-950/40 border-purple-500/20 text-purple-100 hover:border-emerald-400/40'}">${esc(p.name)}</button>`;
+              });
+              html += `</div>`;
+            } else {
+              html += `<div class="text-xs text-purple-400/70 italic mb-3">Bạn đang say ngủ... chờ bình minh lên.</div>`;
+            }
+          } else if (MP.state.phase === 'night') {
+            html += `<div class="text-xs text-purple-400/70 italic mb-3">${me ? 'Bạn đã bị loại, hãy yên lặng quan sát.' : 'Bạn đang theo dõi với tư cách khán giả.'}</div>`;
+          } else if (MP.state.phase === 'day') {
+            html += `<div class="text-xs text-purple-300/80 mb-3">Cả làng thức dậy và bàn luận xem ai là Sói...</div>`;
+          } else if (MP.state.phase === 'voting') {
+            if (me && me.alive) {
+              const alive = allPlayers.filter(p => p.alive);
+              const day = MP.day || {};
+              const myPick = (day.votes || {})[MP.myId];
+              html += `<div class="text-xs text-purple-300/80 mb-2">Bỏ phiếu treo cổ nghi phạm:</div><div class="space-y-1.5 mb-3">`;
+              alive.filter(p => p.id !== MP.myId).forEach(p => {
+                const c = day.votes ? Object.values(day.votes).filter(v => v === p.id).length : 0;
+                html += `<button onclick="MP.dayVote('${p.id}')" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold border ${myPick === p.id ? 'bg-amber-900/50 border-amber-400/60 text-amber-200' : 'bg-purple-950/40 border-purple-500/20 text-purple-100 hover:border-amber-400/40'}"><span>${esc(p.name)}</span>${c > 0 ? `<span class="text-[10px] opacity-70">${c} phiếu</span>` : ''}</button>`;
+              });
+              html += `</div>`;
+            } else {
+              html += `<div class="text-xs text-purple-400/70 italic mb-3">Bạn không còn quyền bỏ phiếu.</div>`;
+            }
+          }
+
+          if (MP.isHost) {
+            if (MP.state.phase === 'night') html += `<button onclick="MP.endNight()" class="w-full glass-button active px-3 py-2 rounded-xl text-xs font-bold mb-3">Kết thúc đêm</button>`;
+            if (MP.state.phase === 'day') html += `<button onclick="MP.startVoting()" class="w-full glass-button active px-3 py-2 rounded-xl text-xs font-bold mb-3">Bắt đầu bỏ phiếu</button>`;
+            if (MP.state.phase === 'voting') html += `<button onclick="MP.endVoting()" class="w-full glass-button active px-3 py-2 rounded-xl text-xs font-bold mb-3">Chốt bỏ phiếu</button>`;
+          }
+        }
+
+        html += `<div class="text-[10px] uppercase tracking-widest font-extrabold text-purple-300/70 mt-4 mb-2">Nhật ký</div>
+          <div class="text-[11px] text-purple-300/80 leading-relaxed space-y-1 max-h-40 overflow-y-auto bg-purple-950/30 rounded-xl p-2.5 border border-purple-500/10">
+            ${(MP.state.log || []).slice(-20).map(l => `<div>${esc(l)}</div>`).join('') || '<div class="opacity-50">Chưa có gì xảy ra.</div>'}
+          </div>`;
+
+        body.innerHTML = html;
+      }
+      MP.renderWolfPanel = renderWolfPanel;
+
+      window.toggleWolfPanel = function () {
+        const panel = document.getElementById('wolf-panel');
+        if (panel.classList.contains('-translate-x-full')) openWolfPanel(); else closeWolfPanel();
+      };
+      window.openWolfPanel = function () {
+        if (typeof fpControls !== 'undefined' && fpControls && fpControls.isLocked) fpControls.unlock();
+        document.getElementById('wolf-panel').classList.remove('-translate-x-full');
+        renderWolfPanel();
+      };
+      window.closeWolfPanel = function () {
+        document.getElementById('wolf-panel').classList.add('-translate-x-full');
+      };
+    })();
+  </script>
+
+</body></html>
